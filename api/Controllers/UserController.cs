@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Interfaces;
 using api.Mappers.UserMappers;
 using api.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,11 @@ namespace api.Controllers
     [ApiController]
     public class UserController : ControllerBase
 {
-    private readonly FikirHavuzuContext _context;
-    public UserController(FikirHavuzuContext context)
+    private readonly IUserRepository _user_repo;
+    public UserController(IUserRepository userRepository)
     {
-        _context = context;
-        
+        _user_repo = userRepository;
+
     }
     
     // GET: api/users
@@ -25,15 +26,15 @@ namespace api.Controllers
     
     public async Task<IActionResult> GetUsers()
     {
-        var users = await _context.Users.ToListAsync();
+        var users = await _user_repo.GetAllUsersAsync();
         var usersDto = users.Select(u => u.ToUserDto());
         return Ok(usersDto);
     }
     
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUser(int id)
+    public async Task<IActionResult> GetUser([FromRoute] int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
         {
             return NotFound();
@@ -47,8 +48,8 @@ namespace api.Controllers
     {
         var user = userDto.ToUser();
 
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
+        await _user_repo.CreateUserAsync(user);
+        await _user_repo.UpdateUserAsync(user.Id, user);
 
         return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToUserDto());
     }
@@ -58,7 +59,7 @@ namespace api.Controllers
 
     public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] Dtos.User.UpdateUserRequestDto userDto)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
         {
             return NotFound();
@@ -72,7 +73,7 @@ namespace api.Controllers
         user.PasswordHash = userDto.PasswordHash;
         user.IsActive = userDto.IsActive;
 
-        await _context.SaveChangesAsync();
+        await _user_repo.UpdateUserAsync(id, user);
 
         return Ok(user.ToUserDto());
     }
@@ -82,14 +83,13 @@ namespace api.Controllers
 
     public async Task<IActionResult> DeleteUser([FromRoute] int id)
     {
-        var user = _context.Users.Find(id);
+        var user = _user_repo.GetUserByIdAsync(id).Result;
         if (user == null)
         {
             return NotFound();
         }
 
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
+        await _user_repo.DeleteUserAsync(id);
 
         return NoContent();
     }

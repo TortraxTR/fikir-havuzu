@@ -1,5 +1,7 @@
 using api;
+using api.Interfaces;
 using api.Models;
+using api.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<FikirHavuzuContext>(options =>
     options.UseNpgsql(connectionString));
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 
