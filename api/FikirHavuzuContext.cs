@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using api.Models;
 
-namespace api.Models;
+namespace api;
 
 public partial class FikirHavuzuContext : DbContext
 {
-    public FikirHavuzuContext()
-    {
-    }
-
     public FikirHavuzuContext(DbContextOptions<FikirHavuzuContext> options)
         : base(options)
     {

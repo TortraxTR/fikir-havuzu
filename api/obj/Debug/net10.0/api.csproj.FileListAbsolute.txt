@@ -121,3 +121,6 @@ C:\Users\defne\OneDrive\Belgeler\fikir-havuzu\api\bin\Debug\net10.0\zh-Hans\Micr
 C:\Users\defne\OneDrive\Belgeler\fikir-havuzu\api\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 C:\Users\defne\OneDrive\Belgeler\fikir-havuzu\api\bin\Debug\net10.0\Npgsql.dll
 C:\Users\defne\OneDrive\Belgeler\fikir-havuzu\api\bin\Debug\net10.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+C:\Users\defne\OneDrive\Belgeler\fikir-havuzu\api\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\defne\OneDrive\Belgeler\fikir-havuzu\api\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\defne\OneDrive\Belgeler\fikir-havuzu\api\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
