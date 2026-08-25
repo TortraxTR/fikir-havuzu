@@ -48,13 +48,11 @@ public partial class FikirHavuzuContext : DbContext
 
             entity.HasOne(d => d.Creator).WithMany(p => p.Evaluations)
                 .HasForeignKey(d => d.CreatorId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("yaratıcı_id");
+                .HasConstraintName("Evaluation_creator_id_fkey");
 
             entity.HasOne(d => d.Proposal).WithMany(p => p.Evaluations)
                 .HasForeignKey(d => d.ProposalId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fikir_id");
+                .HasConstraintName("Evaluation_proposal_id_fkey");
         });
 
         modelBuilder.Entity<Permission>(entity =>
@@ -82,7 +80,6 @@ public partial class FikirHavuzuContext : DbContext
 
             entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
-                .HasIdentityOptions(null, null, 0L, null, null, null)
                 .HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
@@ -117,15 +114,13 @@ public partial class FikirHavuzuContext : DbContext
 
             entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
-                .HasIdentityOptions(null, null, 0L, null, null, null)
                 .HasColumnName("id");
             entity.Property(e => e.File).HasColumnName("file");
             entity.Property(e => e.ProposalId).HasColumnName("proposal_id");
 
             entity.HasOne(d => d.Proposal).WithMany(p => p.ProposalFiles)
                 .HasForeignKey(d => d.ProposalId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fikir_id");
+                .HasConstraintName("ProposalFile_proposal_id_fkey");
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -140,7 +135,6 @@ public partial class FikirHavuzuContext : DbContext
 
             entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
-                .HasIdentityOptions(null, null, 0L, null, null, null)
                 .HasColumnName("id");
             entity.Property(e => e.GovernmentId)
                 .HasMaxLength(11)
@@ -161,12 +155,10 @@ public partial class FikirHavuzuContext : DbContext
                     "UserPermission",
                     r => r.HasOne<Permission>().WithMany()
                         .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("Yetki"),
+                        .HasConstraintName("UserPermission_permission_id_fkey"),
                     l => l.HasOne<User>().WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("Kullanıcı"),
+                        .HasConstraintName("UserPermission_user_id_fkey"),
                     j =>
                     {
                         j.HasKey("UserId", "PermissionId").HasName("KullanıcıYetki_pkey");
