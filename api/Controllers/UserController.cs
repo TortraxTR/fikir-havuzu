@@ -19,19 +19,21 @@ namespace api.Controllers
         _context = context;
         
     }
-
+    
+    // GET: api/users
     [HttpGet]
     
-    public IActionResult GetUsers()
+    public async Task<IActionResult> GetUsers()
     {
-        var users = _context.Users.ToList().Select(u => u.ToUserDto());
-        return Ok(users);
+        var users = await _context.Users.ToListAsync();
+        var usersDto = users.Select(u => u.ToUserDto());
+        return Ok(usersDto);
     }
     
     [HttpGet("{id}")]
-    public IActionResult GetUser(int id)
+    public async Task<IActionResult> GetUser(int id)
     {
-        var user = _context.Users.Find(id);
+        var user = await _context.Users.FindAsync(id);
         if (user == null)
         {
             return NotFound();
@@ -39,25 +41,57 @@ namespace api.Controllers
         return Ok(user.ToUserDto());
     }
 
+    // POST: api/users
     [HttpPost]
-
-    public IActionResult CreateUser([FromBody] Dtos.User.CreateUserRequestDto userDto)
+    public async Task<IActionResult> CreateUser([FromBody] Dtos.User.CreateUserRequestDto userDto)
     {
-        var user = new User
-        {
-            Name = userDto.Name,
-            Surname = userDto.Surname,
-            Phone = userDto.Phone,
-            RegistrationNo = userDto.RegistrationNo,
-            GovernmentId = userDto.GovernmentId,
-            PasswordHash = userDto.PasswordHash,
-            IsActive = userDto.IsActive
-        };
+        var user = userDto.ToUser();
 
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToUserDto());
+    }
+
+    // UPDATE: api/users/{id}
+    [HttpPut("{id}")]
+
+    public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] Dtos.User.UpdateUserRequestDto userDto)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        user.Name = userDto.Name;
+        user.Surname = userDto.Surname;
+        user.Phone = userDto.Phone;
+        user.RegistrationNo = userDto.RegistrationNo;
+        user.GovernmentId = userDto.GovernmentId;
+        user.PasswordHash = userDto.PasswordHash;
+        user.IsActive = userDto.IsActive;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(user.ToUserDto());
+    }
+
+    // DELETE: api/users/{id}
+    [HttpDelete("{id}")]
+
+    public async Task<IActionResult> DeleteUser([FromRoute] int id)
+    {
+        var user = _context.Users.Find(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 
 }};
