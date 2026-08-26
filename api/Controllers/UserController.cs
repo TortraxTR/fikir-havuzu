@@ -89,29 +89,20 @@ namespace api.Controllers
 
     public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] Dtos.User.UpdateUserRequestDto userDto)
     {
-        var user = await _user_repo.GetUserByIdAsync(id);
-        if (user == null)
+        var updatedUser = await _user_repo.UpdateUserAsync(id, userDto);
+        if (updatedUser == null)
         {
             return NotFound();
         }
 
-        user.Name = userDto.Name;
-        user.Surname = userDto.Surname;
-        user.Phone = userDto.Phone;
-        user.RegistrationNo = userDto.RegistrationNo;
-        user.GovernmentId = userDto.GovernmentId;
-        user.IsActive = userDto.IsActive;
-
-        await _user_repo.UpdateUserAsync(id, user);
-
-        return Ok(user.ToUserDto());
+        return Ok(updatedUser.ToUserDto());
     }
 
     // DELETE: api/users/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
     {
-        var user = _user_repo.GetUserByIdAsync(id).Result;
+        var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
         {
             return NotFound();

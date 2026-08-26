@@ -14,13 +14,16 @@ namespace api.Controllers
     {
         private readonly IProposalRepository _proposalRepository;
         private readonly IEvaluationRepository _evaluationRepository;
+        private readonly IUserRepository _userRepository;
 
         public ProposalController(
             IProposalRepository proposalRepository,
-            IEvaluationRepository evaluationRepository)
+            IEvaluationRepository evaluationRepository,
+            IUserRepository userRepository)
         {
             _proposalRepository = proposalRepository;
             _evaluationRepository = evaluationRepository;
+            _userRepository = userRepository;
         }
 
         // GET: api/proposals
@@ -70,6 +73,12 @@ namespace api.Controllers
                 return NotFound();
             }
 
+            var user = await _userRepository.GetUserByIdAsync(evaluationDto.UserId);
+            if (user == null)
+            {
+                return BadRequest("User does not exist.");
+            }
+
             var evaluation = evaluationDto.ToEvaluation();
             evaluation.ProposalId = proposalId;
 
@@ -86,6 +95,12 @@ namespace api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateProposal([FromBody] CreateProposalRequestDto proposalDto)
         {
+            var user = await _userRepository.GetUserByIdAsync(proposalDto.UserId);
+            if (user == null)
+            {
+                return BadRequest("User does not exist.");
+            }
+
             var createdProposal = await _proposalRepository.CreateProposalAsync(proposalDto.ToProposal());
             return CreatedAtAction(nameof(GetProposal), new { id = createdProposal.Id }, createdProposal.ToProposalDto());
         }

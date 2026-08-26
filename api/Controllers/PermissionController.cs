@@ -1,6 +1,7 @@
 using api.Interfaces;
 using api.Dtos.Permission;
 using api.Models;
+using api.Mappers.PermissionMappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -22,7 +23,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetPermissions()
         {
             var permissions = await _permissionRepository.GetAllPermissionsAsync();
-            return Ok(permissions);
+            return Ok(permissions.Select(p => p.ToPermissionDto()));
         }
 
         // GET: api/permissions/{id}
@@ -34,7 +35,7 @@ namespace api.Controllers
             {
                 return NotFound();
             }
-            return Ok(permission);
+            return Ok(permission.ToPermissionDto());
         }
 
         // POST: api/permissions
@@ -47,7 +48,7 @@ namespace api.Controllers
             };
 
             var createdPermission = await _permissionRepository.CreatePermissionAsync(permission);
-            return CreatedAtAction(nameof(GetPermission), new { id = createdPermission.Id }, createdPermission);
+            return CreatedAtAction(nameof(GetPermission), new { id = createdPermission.Id }, createdPermission.ToPermissionDto());
         }
 
         // PUT: api/permissions/{id}
@@ -65,7 +66,7 @@ namespace api.Controllers
                 return NotFound();
             }
 
-            return Ok(updatedPermission);
+            return Ok(updatedPermission.ToPermissionDto());
         }
 
         // DELETE: api/permissions/{id}

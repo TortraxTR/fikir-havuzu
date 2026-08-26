@@ -31,7 +31,7 @@ namespace api.Repositories
             return user;
         }
 
-        public async Task<User?> UpdateUserAsync(Guid id, User user)
+        public async Task<User?> UpdateUserAsync(Guid id, Dtos.User.UpdateUserRequestDto userDto)
         {
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)
@@ -39,12 +39,12 @@ namespace api.Repositories
                 return null;
             }
 
-            existingUser.Name = user.Name;
-            existingUser.Surname = user.Surname;
-            existingUser.Phone = user.Phone;
-            existingUser.RegistrationNo = user.RegistrationNo;
-            existingUser.GovernmentId = user.GovernmentId;
-            existingUser.IsActive = user.IsActive;
+            existingUser.Name = userDto.Name;
+            existingUser.Surname = userDto.Surname;
+            existingUser.Phone = userDto.Phone;
+            existingUser.RegistrationNo = userDto.RegistrationNo;
+            existingUser.GovernmentId = userDto.GovernmentId;
+            existingUser.IsActive = userDto.IsActive;
 
             await _context.SaveChangesAsync();
             return existingUser;

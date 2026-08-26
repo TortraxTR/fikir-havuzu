@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using api.Models;
@@ -35,15 +35,13 @@ public partial class FikirHavuzuContext : DbContext
             entity.HasIndex(e => e.UserId, "IX_Değerlendirme_yaratıcı_id");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
             entity.Property(e => e.Comment).HasColumnName("comment");
             entity.Property(e => e.UserId).HasColumnName("user_id");
             entity.Property(e => e.IsPositive).HasColumnName("is_positive");
             entity.Property(e => e.ProposalId).HasColumnName("proposal_id");
             entity.Property(e => e.Score)
-                .ValueGeneratedOnAdd()
-                .HasIdentityOptions(null, null, 0L, 5L, null, null)
                 .HasColumnName("score");
 
             entity.HasOne(d => d.User).WithMany(p => p.Evaluations)

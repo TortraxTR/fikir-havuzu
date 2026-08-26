@@ -10,10 +10,17 @@ namespace api.Controllers
     public class EvaluationController : ControllerBase
     {
         private readonly IEvaluationRepository _evaluationRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IProposalRepository _proposalRepository;
 
-        public EvaluationController(IEvaluationRepository evaluationRepository)
+        public EvaluationController(
+            IEvaluationRepository evaluationRepository,
+            IUserRepository userRepository,
+            IProposalRepository proposalRepository)
         {
             _evaluationRepository = evaluationRepository;
+            _userRepository = userRepository;
+            _proposalRepository = proposalRepository;
         }
 
         // GET: api/evaluations
@@ -41,6 +48,18 @@ namespace api.Controllers
 
         public async Task<IActionResult> CreateEvaluation([FromBody] Dtos.Evaluation.CreateEvaluationRequestDto evaluationDto)
         {
+            var user = await _userRepository.GetUserByIdAsync(evaluationDto.UserId);
+            if (user == null)
+            {
+                return BadRequest("User does not exist.");
+            }
+
+            var proposal = await _proposalRepository.GetProposalByIdAsync(evaluationDto.ProposalId);
+            if (proposal == null)
+            {
+                return BadRequest("Proposal does not exist.");
+            }
+
             var evaluation = evaluationDto.ToEvaluation();
             var createdEvaluation = await _evaluationRepository.CreateEvaluationAsync(evaluation);
             return CreatedAtAction(nameof(GetEvaluation), new { id = createdEvaluation.Id }, createdEvaluation.ToEvaluationDto());
@@ -50,6 +69,18 @@ namespace api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEvaluation([FromRoute] Guid id, [FromBody] Dtos.Evaluation.UpdateEvaluationRequestDto evaluationDto)
         {
+            var user = await _userRepository.GetUserByIdAsync(evaluationDto.UserId);
+            if (user == null)
+            {
+                return BadRequest("User does not exist.");
+            }
+
+            var proposal = await _proposalRepository.GetProposalByIdAsync(evaluationDto.ProposalId);
+            if (proposal == null)
+            {
+                return BadRequest("Proposal does not exist.");
+            }
+
             var evaluation = evaluationDto.ToEvaluation();
             var updatedEvaluation = await _evaluationRepository.UpdateEvaluationAsync(id, evaluation);
             if (updatedEvaluation == null)
