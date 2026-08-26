@@ -1,3 +1,4 @@
+using api.Interfaces;
 using api.Dtos.Proposal;
 using api.Mappers.ProposalMappers;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +10,9 @@ namespace api.Controllers
     
     public class ProposalController : ControllerBase
     {
-        private readonly Interfaces.IProposalRepository _proposalRepository;
+        private readonly IProposalRepository _proposalRepository;
 
-        public ProposalController(Interfaces.IProposalRepository proposalRepository)
+        public ProposalController(IProposalRepository proposalRepository)
         {
             _proposalRepository = proposalRepository;
         }
