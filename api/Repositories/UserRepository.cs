@@ -23,7 +23,7 @@ namespace api.Repositories
             return await _context.Users.ToListAsync();
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(Guid id)
         {
             return await _context.Users.FindAsync(id);
         }
@@ -35,7 +35,7 @@ namespace api.Repositories
             return user;
         }
 
-        public async Task<User?> UpdateUserAsync(int id, User user)
+        public async Task<User?> UpdateUserAsync(Guid id, User user)
         {
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)
@@ -55,7 +55,7 @@ namespace api.Repositories
             return existingUser;
         }
 
-        public async Task<bool> DeleteUserAsync(int id)
+        public async Task<bool> DeleteUserAsync(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)

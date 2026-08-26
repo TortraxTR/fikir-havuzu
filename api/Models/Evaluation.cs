@@ -5,11 +5,11 @@ namespace api.Models;
 
 public partial class Evaluation
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
-    public int CreatorId { get; set; }
+    public Guid CreatorId { get; set; }
 
-    public int ProposalId { get; set; }
+    public Guid ProposalId { get; set; }
 
     public string? Comment { get; set; }
 

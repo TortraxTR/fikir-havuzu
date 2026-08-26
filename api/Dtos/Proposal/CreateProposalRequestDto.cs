@@ -7,17 +7,17 @@ namespace api.Dtos.Proposal
 {
     public class CreateProposalRequestDto
     {
-        public int CreatorId { get; set; }
+        public Guid CreatorId { get; set; } // Öneriyi oluşturan kullanıcı ID
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } // Önerinin oluşturulma tarihi
 
-        public string Title { get; set; } = null!;
+        public string Title { get; set; } = null!; // Başlık
 
-        public string Topic { get; set; } = null!;
+        public string Topic { get; set; } = null!; // Konu
 
-        public string Purpose { get; set; } = null!;
+        public string Purpose { get; set; } = null!; // Amaç
 
-        public string Explanation { get; set; } = null!;
+        public string Explanation { get; set; } = null!; // Açıklama
 
     }
 }

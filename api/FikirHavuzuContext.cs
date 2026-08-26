@@ -64,8 +64,7 @@ public partial class FikirHavuzuContext : DbContext
             entity.HasIndex(e => e.Name, "YetkiAdı").IsUnique();
 
             entity.Property(e => e.Id)
-                .UseIdentityAlwaysColumn()
-                .HasIdentityOptions(null, null, 0L, null, null, null)
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
             entity.Property(e => e.Name).HasColumnName("name");
         });
@@ -79,7 +78,7 @@ public partial class FikirHavuzuContext : DbContext
             entity.HasIndex(e => e.CreatorId, "IX_Fikir_yaratıcı_id");
 
             entity.Property(e => e.Id)
-                .UseIdentityAlwaysColumn()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
@@ -113,7 +112,7 @@ public partial class FikirHavuzuContext : DbContext
             entity.HasIndex(e => e.ProposalId, "IX_FikirDosya_fikir_id");
 
             entity.Property(e => e.Id)
-                .UseIdentityAlwaysColumn()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
             entity.Property(e => e.File).HasColumnName("file");
             entity.Property(e => e.ProposalId).HasColumnName("proposal_id");
@@ -134,7 +133,7 @@ public partial class FikirHavuzuContext : DbContext
             entity.HasIndex(e => e.RegistrationNo, "Kullanıcı_sicilNo_key").IsUnique();
 
             entity.Property(e => e.Id)
-                .UseIdentityAlwaysColumn()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
             entity.Property(e => e.GovernmentId)
                 .HasMaxLength(11)
@@ -164,8 +163,8 @@ public partial class FikirHavuzuContext : DbContext
                         j.HasKey("UserId", "PermissionId").HasName("KullanıcıYetki_pkey");
                         j.ToTable("UserPermission");
                         j.HasIndex(new[] { "PermissionId" }, "IX_KullanıcıYetki_yetki_id");
-                        j.IndexerProperty<int>("UserId").HasColumnName("user_id");
-                        j.IndexerProperty<int>("PermissionId").HasColumnName("permission_id");
+                        j.IndexerProperty<Guid>("UserId").HasColumnName("user_id");
+                        j.IndexerProperty<Guid>("PermissionId").HasColumnName("permission_id");
                     });
         });
 

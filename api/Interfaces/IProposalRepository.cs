@@ -8,9 +8,9 @@ namespace api.Interfaces
     public interface IProposalRepository
     {
         Task<IEnumerable<Models.Proposal>> GetAllProposalsAsync();
-        Task<Models.Proposal?> GetProposalByIdAsync(int id);
+        Task<Models.Proposal?> GetProposalByIdAsync(Guid id);
         Task<Models.Proposal> CreateProposalAsync(Models.Proposal proposal);
-        Task<Models.Proposal?> UpdateProposalAsync(int id, Models.Proposal proposal);
-        Task<bool> DeleteProposalAsync(int id);
+        Task<Models.Proposal?> UpdateProposalAsync(Guid id, Models.Proposal proposal);
+        Task<bool> DeleteProposalAsync(Guid id);
     }
 }

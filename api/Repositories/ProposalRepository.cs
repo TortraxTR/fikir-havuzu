@@ -22,7 +22,7 @@ namespace api.Repositories
             return await _context.Proposals.ToListAsync();
         }
 
-        public async Task<Proposal?> GetProposalByIdAsync(int id)
+        public async Task<Proposal?> GetProposalByIdAsync(Guid id)
         {
             return await _context.Proposals.FindAsync(id);
         }
@@ -34,7 +34,7 @@ namespace api.Repositories
             return proposal;
         }
 
-        public async Task<Proposal?> UpdateProposalAsync(int id, Proposal proposal)
+        public async Task<Proposal?> UpdateProposalAsync(Guid id, Proposal proposal)
         {
             var existingProposal = await _context.Proposals.FindAsync(id);
             if (existingProposal == null)
@@ -50,7 +50,7 @@ namespace api.Repositories
             return existingProposal;
         }
 
-        public async Task<bool> DeleteProposalAsync(int id)
+        public async Task<bool> DeleteProposalAsync(Guid id)
         {
             var proposal = await _context.Proposals.FindAsync(id);
             if (proposal == null)

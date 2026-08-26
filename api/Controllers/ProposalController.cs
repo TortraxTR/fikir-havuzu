@@ -26,7 +26,7 @@ namespace api.Controllers
 
         // GET: api/proposals/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProposal([FromRoute] int id)
+        public async Task<IActionResult> GetProposal([FromRoute] Guid id)
         {
             var proposal = await _proposalRepository.GetProposalByIdAsync(id);
             if (proposal == null)
@@ -46,7 +46,7 @@ namespace api.Controllers
 
         // PUT: api/proposals/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProposal(int id, [FromBody] UpdateProposalRequestDto proposalDto)
+        public async Task<IActionResult> UpdateProposal(Guid id, [FromBody] UpdateProposalRequestDto proposalDto)
         {
             var updatedProposal = await _proposalRepository.UpdateProposalAsync(id, proposalDto.ToProposal());
             if (updatedProposal == null)
@@ -59,7 +59,7 @@ namespace api.Controllers
 
         // DELETE: api/proposals/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProposal(int id)
+        public async Task<IActionResult> DeleteProposal(Guid id)
         {
             var deleted = await _proposalRepository.DeleteProposalAsync(id);
             if (!deleted)

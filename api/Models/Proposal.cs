@@ -5,9 +5,9 @@ namespace api.Models;
 
 public partial class Proposal
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
-    public int CreatorId { get; set; }
+    public Guid CreatorId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
