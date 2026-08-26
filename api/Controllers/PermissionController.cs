@@ -20,7 +20,7 @@ namespace api.Controllers
 
         // GET: api/permissions
         [HttpGet]
-        public async Task<IActionResult> GetPermissions()
+        public async Task<ActionResult<IEnumerable<PermissionDto>>> GetPermissions()
         {
             var permissions = await _permissionRepository.GetAllPermissionsAsync();
             return Ok(permissions.Select(p => p.ToPermissionDto()));
@@ -28,7 +28,7 @@ namespace api.Controllers
 
         // GET: api/permissions/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPermission([FromRoute] Guid id)
+        public async Task<ActionResult<PermissionDto>> GetPermission([FromRoute] Guid id)
         {
             var permission = await _permissionRepository.GetPermissionByIdAsync(id);
             if (permission == null)
@@ -40,7 +40,7 @@ namespace api.Controllers
 
         // POST: api/permissions
         [HttpPost]
-        public async Task<IActionResult> CreatePermission([FromBody] CreatePermissionRequestDto permissionDto)
+        public async Task<ActionResult<PermissionDto>> CreatePermission([FromBody] CreatePermissionRequestDto permissionDto)
         {
             var permission = new Permission
             {
@@ -53,7 +53,7 @@ namespace api.Controllers
 
         // PUT: api/permissions/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePermission([FromRoute] Guid id, [FromBody] UpdatePermissionRequestDto permissionDto)
+        public async Task<ActionResult<PermissionDto>> UpdatePermission([FromRoute] Guid id, [FromBody] UpdatePermissionRequestDto permissionDto)
         {
             var permission = new Permission
             {
@@ -71,7 +71,7 @@ namespace api.Controllers
 
         // DELETE: api/permissions/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePermission([FromRoute] Guid id)
+        public async Task<ActionResult> DeletePermission([FromRoute] Guid id)
         {
             var deleted = await _permissionRepository.DeletePermissionAsync(id);
             if (!deleted)

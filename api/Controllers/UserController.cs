@@ -1,8 +1,10 @@
 using api.Interfaces;
 using api.Dtos.User;
+using api.Dtos.Permission;
 using api.Mappers.UserMappers;
 using Microsoft.AspNetCore.Mvc;
 using api.Mappers.PermissionMappers;
+using api.Models;
 
 namespace api.Controllers
 {
@@ -20,7 +22,7 @@ namespace api.Controllers
     // GET: api/users
     [HttpGet]
     
-    public async Task<IActionResult> GetUsers()
+    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
     {
         var users = await _user_repo.GetAllUsersAsync();
         var usersDto = users.Select(u => u.ToUserDto());
@@ -28,7 +30,7 @@ namespace api.Controllers
     }
     // GET: api/users/{id}
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUser([FromRoute] Guid id)
+    public async Task<ActionResult<UserDto>> GetUser([FromRoute] Guid id)
     {
         var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
@@ -41,7 +43,7 @@ namespace api.Controllers
     // GET: api/users/{id}/permissions
     [HttpGet("{id}/permissions")]
 
-    public async Task<IActionResult> GetUserPermissions([FromRoute] Guid id)
+    public async Task<ActionResult<IEnumerable<PermissionDto>>> GetUserPermissions([FromRoute] Guid id)
     {
         var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
@@ -56,7 +58,7 @@ namespace api.Controllers
 
     // POST: api/users
     [HttpPost]
-    public async Task<IActionResult> CreateUser([FromBody] Dtos.User.CreateUserRequestDto userDto)
+    public async Task<ActionResult<UserDto>> CreateUser([FromBody] Dtos.User.CreateUserRequestDto userDto)
     {
         var user = userDto.ToUser();
 
@@ -67,7 +69,7 @@ namespace api.Controllers
 
     // POST: api/users/{id}/permissions
     [HttpPost("{id}/permissions")]
-    public async Task<IActionResult> AddPermissionToUser([FromRoute] Guid id, [FromBody] Dtos.Permission.AddPermissionToUserRequestDto requestDto)
+    public async Task<ActionResult> AddPermissionToUser([FromRoute] Guid id, [FromBody] Dtos.Permission.AddPermissionToUserRequestDto requestDto)
     {
         var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
@@ -87,7 +89,7 @@ namespace api.Controllers
     // UPDATE: api/users/{id}
     [HttpPut("{id}")]
 
-    public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] Dtos.User.UpdateUserRequestDto userDto)
+    public async Task<ActionResult<UserDto>> UpdateUser([FromRoute] Guid id, [FromBody] Dtos.User.UpdateUserRequestDto userDto)
     {
         var updatedUser = await _user_repo.UpdateUserAsync(id, userDto);
         if (updatedUser == null)
@@ -100,7 +102,7 @@ namespace api.Controllers
 
     // DELETE: api/users/{id}
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
+    public async Task<ActionResult> DeleteUser([FromRoute] Guid id)
     {
         var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
@@ -115,7 +117,7 @@ namespace api.Controllers
 
     // DELETE: api/users/{id}/permissions/{permissionId}
     [HttpDelete("{id}/permissions/{permissionId}")]
-    public async Task<IActionResult> RemovePermissionFromUser([FromRoute] Guid id, [FromRoute] Guid permissionId)
+    public async Task<ActionResult> RemovePermissionFromUser([FromRoute] Guid id, [FromRoute] Guid permissionId)
     {
         var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)

@@ -1,5 +1,6 @@
 using api.Interfaces;
 using api.Models;
+using api.Dtos.Evaluation;
 using api.Mappers.EvaluationMappers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace api.Controllers
 
         // GET: api/evaluations
         [HttpGet]
-        public async Task<IActionResult> GetEvaluations()
+        public async Task<ActionResult<IEnumerable<EvaluationDto>>> GetEvaluations()
         {
             var evaluations = await _evaluationRepository.GetAllEvaluationsAsync();
             return Ok(evaluations.Select(evaluation => evaluation.ToEvaluationDto()));
@@ -33,7 +34,7 @@ namespace api.Controllers
 
         // GET: api/evaluations/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetEvaluation([FromRoute] Guid id)
+        public async Task<ActionResult<EvaluationDto>> GetEvaluation([FromRoute] Guid id)
         {
             var evaluation = await _evaluationRepository.GetEvaluationByIdAsync(id);
             if (evaluation == null)
@@ -46,7 +47,7 @@ namespace api.Controllers
         // POST: api/evaluations
         [HttpPost]
 
-        public async Task<IActionResult> CreateEvaluation([FromBody] Dtos.Evaluation.CreateEvaluationRequestDto evaluationDto)
+        public async Task<ActionResult<EvaluationDto>> CreateEvaluation([FromBody] CreateEvaluationRequestDto evaluationDto)
         {
             var user = await _userRepository.GetUserByIdAsync(evaluationDto.UserId);
             if (user == null)
@@ -67,7 +68,7 @@ namespace api.Controllers
 
         // PUT: api/evaluations/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEvaluation([FromRoute] Guid id, [FromBody] Dtos.Evaluation.UpdateEvaluationRequestDto evaluationDto)
+        public async Task<ActionResult<EvaluationDto>> UpdateEvaluation([FromRoute] Guid id, [FromBody] UpdateEvaluationRequestDto evaluationDto)
         {
             var user = await _userRepository.GetUserByIdAsync(evaluationDto.UserId);
             if (user == null)
@@ -92,7 +93,7 @@ namespace api.Controllers
 
         // DELETE: api/evaluations/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvaluation([FromRoute] Guid id)
+        public async Task<ActionResult> DeleteEvaluation([FromRoute] Guid id)
         {
             var deleted = await _evaluationRepository.DeleteEvaluationAsync(id);
             if (!deleted)

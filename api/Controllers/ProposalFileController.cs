@@ -65,7 +65,7 @@ namespace api.Controllers
 
         // DELETE: api/ProposalFile/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProposalFile(Guid id)
+        public async Task<ActionResult> DeleteProposalFile(Guid id)
         {
             var deleted = await _proposalFileRepository.DeleteProposalFileAsync(id);
             if (!deleted)

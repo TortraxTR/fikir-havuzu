@@ -33,7 +33,7 @@ namespace api.Controllers
 
         // GET: api/proposals
         [HttpGet]
-        public async Task<IActionResult> GetProposals()
+        public async Task<ActionResult<IEnumerable<ProposalDto>>> GetProposals()
         {
             var proposals = await _proposalRepository.GetAllProposalsAsync();
             return Ok(proposals.Select(proposal => proposal.ToProposalDto()));
@@ -41,7 +41,7 @@ namespace api.Controllers
 
         // GET: api/proposals/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProposal([FromRoute] Guid id)
+        public async Task<ActionResult<ProposalDto>> GetProposal([FromRoute] Guid id)
         {
             var proposal = await _proposalRepository.GetProposalByIdAsync(id);
             if (proposal == null)
@@ -53,7 +53,7 @@ namespace api.Controllers
 
         // GET: api/proposals/{id}/evaluations
         [HttpGet("{id}/evaluations")]
-        public async Task<IActionResult> GetProposalEvaluations([FromRoute] Guid id)
+        public async Task<ActionResult<IEnumerable<EvaluationDto>>> GetProposalEvaluations([FromRoute] Guid id)
         {
             var proposal = await _proposalRepository.GetProposalByIdAsync(id);
             if (proposal == null)
@@ -68,7 +68,7 @@ namespace api.Controllers
 
         // GET: api/proposals/{id}/files
         [HttpGet("{id}/files")]
-        public async Task<IActionResult> GetProposalFiles([FromRoute] Guid id)
+        public async Task<ActionResult<IEnumerable<ProposalFileDto>>> GetProposalFiles([FromRoute] Guid id)
         {
             var proposal = await _proposalRepository.GetProposalByIdAsync(id);
             if (proposal == null)
@@ -82,7 +82,7 @@ namespace api.Controllers
 
         // POST: api/proposals/{proposalId}/files
         [HttpPost("{proposalId}/files")]
-        public async Task<IActionResult> CreateProposalFile(
+        public async Task<ActionResult<ProposalFileDto>> CreateProposalFile(
             [FromRoute] Guid proposalId,
             [FromBody] CreateProposalFileRequestDto fileDto)
         {
@@ -107,7 +107,7 @@ namespace api.Controllers
 
         // POST: api/proposals/{proposalId}/evaluations
         [HttpPost("{proposalId}/evaluations")]
-        public async Task<IActionResult> CreateProposalEvaluation(
+        public async Task<ActionResult<EvaluationDto>> CreateProposalEvaluation(
             [FromRoute] Guid proposalId,
             [FromBody] CreateEvaluationRequestDto evaluationDto)
         {
@@ -137,7 +137,7 @@ namespace api.Controllers
 
         // POST: api/proposals
         [HttpPost]
-        public async Task<IActionResult> CreateProposal([FromBody] CreateProposalRequestDto proposalDto)
+        public async Task<ActionResult<ProposalDto>> CreateProposal([FromBody] CreateProposalRequestDto proposalDto)
         {
             var user = await _userRepository.GetUserByIdAsync(proposalDto.UserId);
             if (user == null)
@@ -151,7 +151,7 @@ namespace api.Controllers
 
         // PUT: api/proposals/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProposal(Guid id, [FromBody] UpdateProposalRequestDto proposalDto)
+        public async Task<ActionResult<ProposalDto>> UpdateProposal(Guid id, [FromBody] UpdateProposalRequestDto proposalDto)
         {
             var updatedProposal = await _proposalRepository.UpdateProposalAsync(id, proposalDto.ToProposal());
             if (updatedProposal == null)
@@ -164,7 +164,7 @@ namespace api.Controllers
 
         // DELETE: api/proposals/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProposal(Guid id)
+        public async Task<ActionResult> DeleteProposal(Guid id)
         {
             var deleted = await _proposalRepository.DeleteProposalAsync(id);
             if (!deleted)
