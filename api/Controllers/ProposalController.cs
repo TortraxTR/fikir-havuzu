@@ -1,8 +1,10 @@
 using api.Interfaces;
 using api.Dtos.Proposal;
 using api.Dtos.Evaluation;
+using api.Dtos.ProposalFile;
 using api.Mappers.ProposalMappers;
 using api.Mappers.EvaluationMappers;
+using api.Mappers.ProposalFileMappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -15,15 +17,18 @@ namespace api.Controllers
         private readonly IProposalRepository _proposalRepository;
         private readonly IEvaluationRepository _evaluationRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IProposalFileRepository _fileRepository;
 
         public ProposalController(
             IProposalRepository proposalRepository,
             IEvaluationRepository evaluationRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IProposalFileRepository fileRepository)
         {
             _proposalRepository = proposalRepository;
             _evaluationRepository = evaluationRepository;
             _userRepository = userRepository;
+            _fileRepository = fileRepository;
         }
 
         // GET: api/proposals
@@ -59,6 +64,45 @@ namespace api.Controllers
             var evaluations = await _proposalRepository.GetProposalEvaluationsAsync(id);
             var evaluationsDto = evaluations.Select(e => e.ToEvaluationDto());
             return Ok(evaluationsDto);
+        }
+
+        // GET: api/proposals/{id}/files
+        [HttpGet("{id}/files")]
+        public async Task<IActionResult> GetProposalFiles([FromRoute] Guid id)
+        {
+            var proposal = await _proposalRepository.GetProposalByIdAsync(id);
+            if (proposal == null)
+            {
+                return NotFound();
+            }
+
+            var files = await _fileRepository.GetProposalFilesByProposalIdAsync(id);
+            return Ok(files.Select(f => f.ToProposalFileDto()));
+        }
+
+        // POST: api/proposals/{proposalId}/files
+        [HttpPost("{proposalId}/files")]
+        public async Task<IActionResult> CreateProposalFile(
+            [FromRoute] Guid proposalId,
+            [FromBody] CreateProposalFileRequestDto fileDto)
+        {
+            var proposal = await _proposalRepository.GetProposalByIdAsync(proposalId);
+            if (proposal == null)
+            {
+                return NotFound();
+            }
+
+            var fileEntity = fileDto.ToProposalFile();
+            fileEntity.ProposalId = proposalId;
+
+            var createdFile = await _fileRepository.CreateProposalFileAsync(fileEntity);
+
+            return CreatedAtAction(
+                nameof(ProposalFileController.GetProposalFileById),
+                "ProposalFile",
+                new { id = createdFile.Id },
+                createdFile.ToProposalFileDto()
+            );
         }
 
         // POST: api/proposals/{proposalId}/evaluations
