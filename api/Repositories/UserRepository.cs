@@ -63,5 +63,50 @@ namespace api.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<Permission>> GetUserPermissionsAsync(Guid userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Permissions)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            return user?.Permissions ?? Enumerable.Empty<Permission>();
+        }
+
+        public async Task<bool> AddPermissionToUserAsync(Guid userId, Guid permissionId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Permissions)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            var permission = await _context.Permissions.FindAsync(permissionId);
+
+            if (user == null || permission == null)
+            {
+                return false;
+            }
+
+            user.Permissions.Add(permission);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RemovePermissionFromUserAsync(Guid userId, Guid permissionId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Permissions)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            var permission = await _context.Permissions.FindAsync(permissionId);
+
+            if (user == null || permission == null)
+            {
+                return false;
+            }
+
+            user.Permissions.Remove(permission);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
