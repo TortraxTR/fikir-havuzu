@@ -12,7 +12,6 @@ namespace api.Mappers.UserMappers
                 Phone = user.Phone,
                 RegistrationNo = user.RegistrationNo,
                 GovernmentId = user.GovernmentId,
-                PasswordHash = user.PasswordHash,
                 IsActive = user.IsActive
             };
         }
@@ -26,7 +25,7 @@ namespace api.Mappers.UserMappers
                 Phone = userDto.Phone,
                 RegistrationNo = userDto.RegistrationNo,
                 GovernmentId = userDto.GovernmentId,
-                PasswordHash = userDto.PasswordHash,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
                 IsActive = userDto.IsActive
             };
         }

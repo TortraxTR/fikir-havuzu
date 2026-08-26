@@ -12,7 +12,7 @@ namespace api.Dtos.User
 
         public string GovernmentId { get; set; } = null!; // T.C. Kimlik No.
 
-        public string PasswordHash { get; set; } = null!; // Şifre Hash
+        public string Password { get; set; } = null!; // Şifre
 
         public bool IsActive { get; set; } // Kullanıcı aktif mi?
     }

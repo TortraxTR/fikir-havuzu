@@ -44,7 +44,6 @@ namespace api.Repositories
             existingUser.Phone = user.Phone;
             existingUser.RegistrationNo = user.RegistrationNo;
             existingUser.GovernmentId = user.GovernmentId;
-            existingUser.PasswordHash = user.PasswordHash;
             existingUser.IsActive = user.IsActive;
 
             await _context.SaveChangesAsync();

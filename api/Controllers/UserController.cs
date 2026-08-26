@@ -61,7 +61,6 @@ namespace api.Controllers
         var user = userDto.ToUser();
 
         await _user_repo.CreateUserAsync(user);
-        await _user_repo.UpdateUserAsync(user.Id, user);
 
         return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToUserDto());
     }
@@ -101,7 +100,6 @@ namespace api.Controllers
         user.Phone = userDto.Phone;
         user.RegistrationNo = userDto.RegistrationNo;
         user.GovernmentId = userDto.GovernmentId;
-        user.PasswordHash = userDto.PasswordHash;
         user.IsActive = userDto.IsActive;
 
         await _user_repo.UpdateUserAsync(id, user);
