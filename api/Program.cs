@@ -19,6 +19,7 @@ builder.Services.AddDbContext<FikirHavuzuContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProposalRepository, ProposalRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>();
 
 var app = builder.Build();
 
