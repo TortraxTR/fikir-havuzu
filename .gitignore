@@ -1,6 +1,6 @@
 # Build output
-bin/
-obj/
+api/bin/
+api/obj/
 
 # Visual Studio
 .vs/
