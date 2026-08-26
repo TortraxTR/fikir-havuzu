@@ -2,6 +2,7 @@ using api.Interfaces;
 using api.Dtos.User;
 using api.Mappers.UserMappers;
 using Microsoft.AspNetCore.Mvc;
+using api.Mappers.PermissionMappers;
 
 namespace api.Controllers
 {
@@ -25,7 +26,7 @@ namespace api.Controllers
         var usersDto = users.Select(u => u.ToUserDto());
         return Ok(usersDto);
     }
-    
+    // GET: api/users/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUser([FromRoute] Guid id)
     {
@@ -35,6 +36,22 @@ namespace api.Controllers
             return NotFound();
         }
         return Ok(user.ToUserDto());
+    }
+    
+    // GET: api/users/{id}/permissions
+    [HttpGet("{id}/permissions")]
+
+    public async Task<IActionResult> GetUserPermissions([FromRoute] Guid id)
+    {
+        var user = await _user_repo.GetUserByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var permissions = await _user_repo.GetUserPermissionsAsync(id);
+        var permissionsDto = permissions.Select(p => p.ToPermissionDto());
+        return Ok(permissionsDto);
     }
 
     // POST: api/users
@@ -47,6 +64,25 @@ namespace api.Controllers
         await _user_repo.UpdateUserAsync(user.Id, user);
 
         return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToUserDto());
+    }
+
+    // POST: api/users/{id}/permissions
+    [HttpPost("{id}/permissions")]
+    public async Task<IActionResult> AddPermissionToUser([FromRoute] Guid id, [FromBody] Dtos.Permission.AddPermissionToUserRequestDto requestDto)
+    {
+        var user = await _user_repo.GetUserByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var success = await _user_repo.AddPermissionToUserAsync(id, requestDto.PermissionId);
+        if (!success)
+        {
+            return BadRequest("Failed to add permission to user.");
+        }
+
+        return NoContent();
     }
 
     // UPDATE: api/users/{id}
@@ -75,7 +111,6 @@ namespace api.Controllers
 
     // DELETE: api/users/{id}
     [HttpDelete("{id}")]
-
     public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
     {
         var user = _user_repo.GetUserByIdAsync(id).Result;
@@ -85,6 +120,25 @@ namespace api.Controllers
         }
 
         await _user_repo.DeleteUserAsync(id);
+
+        return NoContent();
+    }
+
+    // DELETE: api/users/{id}/permissions/{permissionId}
+    [HttpDelete("{id}/permissions/{permissionId}")]
+    public async Task<IActionResult> RemovePermissionFromUser([FromRoute] Guid id, [FromRoute] Guid permissionId)
+    {
+        var user = await _user_repo.GetUserByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var success = await _user_repo.RemovePermissionFromUserAsync(id, permissionId);
+        if (!success)
+        {
+            return BadRequest("Failed to remove permission from user.");
+        }
 
         return NoContent();
     }
