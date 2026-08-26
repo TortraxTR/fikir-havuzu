@@ -2,7 +2,7 @@ namespace api.Dtos.Proposal
 {
     public class CreateProposalRequestDto
     {
-        public Guid CreatorId { get; set; } // Öneriyi oluşturan kullanıcı ID
+        public Guid UserId { get; set; } // Öneriyi oluşturan kullanıcı ID
 
         public DateTime CreatedAt { get; set; } // Önerinin oluşturulma tarihi
 

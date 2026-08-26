@@ -4,7 +4,7 @@ namespace api.Dtos.Proposal
     {
         public Guid Id { get; set; } // Öneri ID
 
-        public Guid CreatorId { get; set; } // Öneriyi oluşturan kullanıcı ID
+        public Guid UserId { get; set; } // Öneriyi oluşturan kullanıcı ID
 
         public DateTime CreatedAt { get; set; } // Önerinin oluşturulma tarihi
 

@@ -77,7 +77,8 @@ public static class DbSeeder
         var proposal1 = new Proposal
         {
             Id = Guid.Parse("d1111111-1111-1111-1111-111111111111"),
-            Creator = proposerUser,
+            UserId = proposerUser.Id,
+            User = proposerUser,
             CreatedAt = DateTime.UtcNow.AddDays(-10),
             Title = "Enerji Tasarruflu Aydinlatma",
             Topic = "Surdurulebilirlik",
@@ -88,7 +89,8 @@ public static class DbSeeder
         var proposal2 = new Proposal
         {
             Id = Guid.Parse("d2222222-2222-2222-2222-222222222222"),
-            Creator = adminUser,
+            UserId = adminUser.Id,
+            User = adminUser,
             CreatedAt = DateTime.UtcNow.AddDays(-5),
             Title = "Mentorluk Programi",
             Topic = "Kurum Ici Gelisim",
@@ -113,7 +115,8 @@ public static class DbSeeder
         var evaluation1 = new Evaluation
         {
             Id = Guid.Parse("f1111111-1111-1111-1111-111111111111"),
-            Creator = reviewerUser,
+            UserId = reviewerUser.Id,
+            User = reviewerUser,
             Proposal = proposal1,
             Comment = "Uygulanabilir ve geri donus suresi kisa.",
             IsPositive = true
@@ -122,7 +125,8 @@ public static class DbSeeder
         var evaluation2 = new Evaluation
         {
             Id = Guid.Parse("f2222222-2222-2222-2222-222222222222"),
-            Creator = adminUser,
+            UserId = adminUser.Id,
+            User = adminUser,
             Proposal = proposal2,
             Comment = "Kaynak planlamasi netlestirilirse etkisi yuksek olur.",
             IsPositive = true

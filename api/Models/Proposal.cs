@@ -7,7 +7,7 @@ public partial class Proposal
 {
     public Guid Id { get; set; }
 
-    public Guid CreatorId { get; set; }
+    public Guid UserId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
@@ -19,7 +19,7 @@ public partial class Proposal
 
     public string Explanation { get; set; } = null!;
 
-    public virtual User Creator { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 
     public virtual ICollection<Evaluation> Evaluations { get; set; } = new List<Evaluation>();
 

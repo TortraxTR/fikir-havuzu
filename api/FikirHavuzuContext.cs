@@ -32,13 +32,13 @@ public partial class FikirHavuzuContext : DbContext
 
             entity.HasIndex(e => e.ProposalId, "IX_Değerlendirme_fikir_id");
 
-            entity.HasIndex(e => e.CreatorId, "IX_Değerlendirme_yaratıcı_id");
+            entity.HasIndex(e => e.UserId, "IX_Değerlendirme_yaratıcı_id");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
             entity.Property(e => e.Comment).HasColumnName("comment");
-            entity.Property(e => e.CreatorId).HasColumnName("creator_id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
             entity.Property(e => e.IsPositive).HasColumnName("is_positive");
             entity.Property(e => e.ProposalId).HasColumnName("proposal_id");
             entity.Property(e => e.Score)
@@ -46,8 +46,8 @@ public partial class FikirHavuzuContext : DbContext
                 .HasIdentityOptions(null, null, 0L, 5L, null, null)
                 .HasColumnName("score");
 
-            entity.HasOne(d => d.Creator).WithMany(p => p.Evaluations)
-                .HasForeignKey(d => d.CreatorId)
+            entity.HasOne(d => d.User).WithMany(p => p.Evaluations)
+                .HasForeignKey(d => d.UserId)
                 .HasConstraintName("Evaluation_creator_id_fkey");
 
             entity.HasOne(d => d.Proposal).WithMany(p => p.Evaluations)
@@ -75,7 +75,7 @@ public partial class FikirHavuzuContext : DbContext
 
             entity.ToTable("Proposal");
 
-            entity.HasIndex(e => e.CreatorId, "IX_Fikir_yaratıcı_id");
+            entity.HasIndex(e => e.UserId, "IX_Fikir_yaratıcı_id");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd()
@@ -83,7 +83,7 @@ public partial class FikirHavuzuContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnName("created_at");
-            entity.Property(e => e.CreatorId).HasColumnName("creator_id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
             entity.Property(e => e.Explanation)
                 .HasMaxLength(8192)
                 .HasColumnName("explanation");
@@ -97,8 +97,8 @@ public partial class FikirHavuzuContext : DbContext
                 .HasMaxLength(128)
                 .HasColumnName("topic");
 
-            entity.HasOne(d => d.Creator).WithMany(p => p.Proposals)
-                .HasForeignKey(d => d.CreatorId)
+            entity.HasOne(d => d.User).WithMany(p => p.Proposals)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("yaratıcı_id");
         });

@@ -23,6 +23,13 @@ namespace api.Repositories
             return await _context.Proposals.FindAsync(id);
         }
 
+        public async Task<IEnumerable<Proposal>> GetProposalsByUserIdAsync(Guid userId)
+        {
+            return await _context.Proposals
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+        }
+
         public async Task<Proposal> CreateProposalAsync(Proposal proposal)
         {
             await _context.Proposals.AddAsync(proposal);

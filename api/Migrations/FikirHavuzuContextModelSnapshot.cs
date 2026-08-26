@@ -50,10 +50,6 @@ namespace api.Migrations
                         .HasColumnType("text")
                         .HasColumnName("comment");
 
-                    b.Property<Guid>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("creator_id");
-
                     b.Property<bool>("IsPositive")
                         .HasColumnType("boolean")
                         .HasColumnName("is_positive");
@@ -70,12 +66,16 @@ namespace api.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Score"));
                     NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<int>("Score"), null, null, 0L, 5L, null, null);
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id")
                         .HasName("Yorum_pkey");
 
                     b.HasIndex(new[] { "ProposalId" }, "IX_Değerlendirme_fikir_id");
 
-                    b.HasIndex(new[] { "CreatorId" }, "IX_Değerlendirme_yaratıcı_id");
+                    b.HasIndex(new[] { "UserId" }, "IX_Değerlendirme_yaratıcı_id");
 
                     b.ToTable("Evaluation", (string)null);
                 });
@@ -113,10 +113,6 @@ namespace api.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
-                    b.Property<Guid>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("creator_id");
-
                     b.Property<string>("Explanation")
                         .IsRequired()
                         .HasMaxLength(8192)
@@ -141,10 +137,14 @@ namespace api.Migrations
                         .HasColumnType("character varying(128)")
                         .HasColumnName("topic");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id")
                         .HasName("Fikir_pkey");
 
-                    b.HasIndex(new[] { "CreatorId" }, "IX_Fikir_yaratıcı_id");
+                    b.HasIndex(new[] { "UserId" }, "IX_Fikir_yaratıcı_id");
 
                     b.ToTable("Proposal", (string)null);
                 });
@@ -249,13 +249,6 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Models.Evaluation", b =>
                 {
-                    b.HasOne("api.Models.User", "Creator")
-                        .WithMany("Evaluations")
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("Evaluation_creator_id_fkey");
-
                     b.HasOne("api.Models.Proposal", "Proposal")
                         .WithMany("Evaluations")
                         .HasForeignKey("ProposalId")
@@ -263,20 +256,27 @@ namespace api.Migrations
                         .IsRequired()
                         .HasConstraintName("Evaluation_proposal_id_fkey");
 
-                    b.Navigation("Creator");
+                    b.HasOne("api.Models.User", "User")
+                        .WithMany("Evaluations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("Evaluation_creator_id_fkey");
 
                     b.Navigation("Proposal");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("api.Models.Proposal", b =>
                 {
-                    b.HasOne("api.Models.User", "Creator")
+                    b.HasOne("api.Models.User", "User")
                         .WithMany("Proposals")
-                        .HasForeignKey("CreatorId")
+                        .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("yaratıcı_id");
 
-                    b.Navigation("Creator");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("api.Models.ProposalFile", b =>

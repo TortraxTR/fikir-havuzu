@@ -10,7 +10,7 @@ public static class ProposalMapper
         return new ProposalDto
         {
             Id = proposal.Id,
-            CreatorId = proposal.CreatorId,
+            UserId = proposal.UserId,
             CreatedAt = proposal.CreatedAt,
             Title = proposal.Title,
             Topic = proposal.Topic,
@@ -23,7 +23,7 @@ public static class ProposalMapper
     {
         return new Proposal
         {
-            CreatorId = proposalDto.CreatorId,
+            UserId = proposalDto.UserId,
             CreatedAt = proposalDto.CreatedAt == default ? DateTime.UtcNow : proposalDto.CreatedAt,
             Title = proposalDto.Title,
             Topic = proposalDto.Topic,
