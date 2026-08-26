@@ -30,6 +30,13 @@ namespace api.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Evaluation>> GetProposalEvaluationsAsync(Guid proposalId)
+        {       
+            return await _context.Evaluations
+                .Where(e => e.ProposalId == proposalId)
+                .ToListAsync();
+        }
+
         public async Task<Proposal> CreateProposalAsync(Proposal proposal)
         {
             await _context.Proposals.AddAsync(proposal);
@@ -65,5 +72,7 @@ namespace api.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+
     }
 }

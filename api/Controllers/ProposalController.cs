@@ -1,5 +1,6 @@
 using api.Interfaces;
 using api.Dtos.Proposal;
+using api.Dtos.Evaluation;
 using api.Mappers.ProposalMappers;
 using api.Mappers.EvaluationMappers;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,14 @@ namespace api.Controllers
     public class ProposalController : ControllerBase
     {
         private readonly IProposalRepository _proposalRepository;
+        private readonly IEvaluationRepository _evaluationRepository;
 
-        public ProposalController(IProposalRepository proposalRepository)
+        public ProposalController(
+            IProposalRepository proposalRepository,
+            IEvaluationRepository evaluationRepository)
         {
             _proposalRepository = proposalRepository;
+            _evaluationRepository = evaluationRepository;
         }
 
         // GET: api/proposals
@@ -51,6 +56,30 @@ namespace api.Controllers
             var evaluations = await _proposalRepository.GetProposalEvaluationsAsync(id);
             var evaluationsDto = evaluations.Select(e => e.ToEvaluationDto());
             return Ok(evaluationsDto);
+        }
+
+        // POST: api/proposals/{proposalId}/evaluations
+        [HttpPost("{proposalId}/evaluations")]
+        public async Task<IActionResult> CreateProposalEvaluation(
+            [FromRoute] Guid proposalId,
+            [FromBody] CreateEvaluationRequestDto evaluationDto)
+        {
+            var proposal = await _proposalRepository.GetProposalByIdAsync(proposalId);
+            if (proposal == null)
+            {
+                return NotFound();
+            }
+
+            var evaluation = evaluationDto.ToEvaluation();
+            evaluation.ProposalId = proposalId;
+
+            var createdEvaluation = await _evaluationRepository.CreateEvaluationAsync(evaluation);
+
+            return CreatedAtAction(
+                nameof(EvaluationController.GetEvaluation),
+                "Evaluation",
+                new { id = createdEvaluation.Id },
+                createdEvaluation.ToEvaluationDto());
         }
 
         // POST: api/proposals
