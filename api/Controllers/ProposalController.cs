@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using api.Dtos.Proposal;
+using api.Mappers.ProposalMappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -23,7 +21,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetProposals()
         {
             var proposals = await _proposalRepository.GetAllProposalsAsync();
-            return Ok(proposals);
+            return Ok(proposals.Select(proposal => proposal.ToProposalDto()));
         }
 
         // GET: api/proposals/{id}
@@ -35,18 +33,42 @@ namespace api.Controllers
             {
                 return NotFound();
             }
-            return Ok(proposal);
+            return Ok(proposal.ToProposalDto());
         }
 
         // POST: api/proposals
-        [HttpPost("{creator_id}")]
-        public async Task<IActionResult> CreateProposal([FromBody] Models.Proposal proposal)
+        [HttpPost]
+        public async Task<IActionResult> CreateProposal([FromBody] CreateProposalRequestDto proposalDto)
         {
-            var createdProposal = await _proposalRepository.CreateProposalAsync(proposal);
-            return CreatedAtAction(nameof(GetProposal), new { id = createdProposal.Id }, createdProposal);
+            var createdProposal = await _proposalRepository.CreateProposalAsync(proposalDto.ToProposal());
+            return CreatedAtAction(nameof(GetProposal), new { id = createdProposal.Id }, createdProposal.ToProposalDto());
         }
 
+        // PUT: api/proposals/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProposal(int id, [FromBody] UpdateProposalRequestDto proposalDto)
+        {
+            var updatedProposal = await _proposalRepository.UpdateProposalAsync(id, proposalDto.ToProposal());
+            if (updatedProposal == null)
+            {
+                return NotFound();
+            }
 
+            return Ok(updatedProposal.ToProposalDto());
+        }
+
+        // DELETE: api/proposals/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProposal(int id)
+        {
+            var deleted = await _proposalRepository.DeleteProposalAsync(id);
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 
 }

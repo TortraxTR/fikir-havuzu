@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<FikirHavuzuContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<api.Interfaces.IProposalRepository, api.Repositories.ProposalRepository>();
 
 var app = builder.Build();
 

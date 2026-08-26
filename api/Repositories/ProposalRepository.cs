@@ -41,8 +41,6 @@ namespace api.Repositories
             {
                 return null;
             }
-            existingProposal.CreatorId = proposal.CreatorId;
-            existingProposal.CreatedAt = proposal.CreatedAt;
             existingProposal.Title = proposal.Title;
             existingProposal.Topic = proposal.Topic;
             existingProposal.Purpose = proposal.Purpose;
