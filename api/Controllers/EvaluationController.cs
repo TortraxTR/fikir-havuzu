@@ -36,22 +36,6 @@ namespace api.Controllers
             return Ok(evaluation.ToEvaluationDto());
         }
 
-        // GET: api/evaluations/proposal/{proposalId}
-        [HttpGet("proposal/{proposalId}")]
-        public async Task<IActionResult> GetEvaluationsByProposalId([FromRoute] Guid proposalId)
-        {
-            var evaluations = await _evaluationRepository.GetEvaluationsByProposalIdAsync(proposalId);
-            return Ok(evaluations.Select(evaluation => evaluation.ToEvaluationDto()));
-        }
-
-        // GET: api/evaluations/user/{userId}
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetEvaluationsByUserId([FromRoute] Guid userId)
-        {
-            var evaluations = await _evaluationRepository.GetEvaluationsByUserIdAsync(userId);
-            return Ok(evaluations.Select(evaluation => evaluation.ToEvaluationDto()));
-        }
-
         // POST: api/evaluations
         [HttpPost]
 

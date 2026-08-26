@@ -23,20 +23,6 @@ namespace api.Repositories
             return await _context.Evaluations.FindAsync(id);
         }
 
-        public async Task<IEnumerable<Evaluation>> GetEvaluationsByProposalIdAsync(Guid proposalId)
-        {
-            return await _context.Evaluations
-                .Where(e => e.ProposalId == proposalId)
-                .ToListAsync();
-        }
-       
-        public async Task<IEnumerable<Evaluation>> GetEvaluationsByUserIdAsync(Guid userId)
-        {
-            return await _context.Evaluations
-                .Where(e => e.UserId == userId)
-                .ToListAsync();
-        }
-
         public async Task<Evaluation> CreateEvaluationAsync(Evaluation evaluation)
         {
             await _context.Evaluations.AddAsync(evaluation);

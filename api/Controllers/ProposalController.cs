@@ -1,6 +1,7 @@
 using api.Interfaces;
 using api.Dtos.Proposal;
 using api.Mappers.ProposalMappers;
+using api.Mappers.EvaluationMappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -35,6 +36,21 @@ namespace api.Controllers
                 return NotFound();
             }
             return Ok(proposal.ToProposalDto());
+        }
+
+        // GET: api/proposals/{id}/evaluations
+        [HttpGet("{id}/evaluations")]
+        public async Task<IActionResult> GetProposalEvaluations([FromRoute] Guid id)
+        {
+            var proposal = await _proposalRepository.GetProposalByIdAsync(id);
+            if (proposal == null)
+            {
+                return NotFound();
+            }
+
+            var evaluations = await _proposalRepository.GetProposalEvaluationsAsync(id);
+            var evaluationsDto = evaluations.Select(e => e.ToEvaluationDto());
+            return Ok(evaluationsDto);
         }
 
         // POST: api/proposals
