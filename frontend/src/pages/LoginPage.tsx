@@ -12,22 +12,27 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { login } from '../api/auth';
 import { type ChangeEvent, type FormEvent, useState } from 'react';
 
 type LoginForm = {
-  email: string;
+  phoneNumber: string;
   password: string;
   remember: boolean;
 };
 
+
+
 export default function LoginPage() {
   const [form, setForm] = useState<LoginForm>({
-    email: '',
+    phoneNumber: '',
     password: '',
     remember: true,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked, type } = event.target;
@@ -35,12 +40,30 @@ export default function LoginPage() {
       ...current,
       [name]: type === 'checkbox' ? checked : value,
     }));
-    setSubmitted(false);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
+  
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+  
+    try {
+      const user = await login(form.phoneNumber, form.password);
+  
+      console.log('Logged-in user:', user);
+  
+      if (form.remember) {
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+  
+      setSuccess(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,13 +76,13 @@ export default function LoginPage() {
             <TextField
               fullWidth
               required
-              label="E-posta adresi"
-              name="email"
-              type="email"
-              value={form.email}
+              label="Telefon Numarası"
+              name="phoneNumber"
+              type="text"
+              value={form.phoneNumber}
               onChange={handleChange}
-              autoComplete="email"
-              placeholder="ornek@sirket.com"
+              autoComplete="tel"
+              placeholder="5XX XXX XX XX"
             />
             <TextField
               fullWidth
@@ -96,13 +119,25 @@ export default function LoginPage() {
             <Link href="#forgot-password" underline="hover">Şifremi unuttum</Link>
           </Box>
 
-          <Button type="submit" fullWidth variant="contained" size="large">
-            Giriş yap
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            size="large"
+            disabled={loading}
+          >
+            {loading ? 'Giriş yapılıyor...' : 'Giriş yap'}
           </Button>
 
-          {submitted && (
-            <Alert severity="info" className="login-alert">
-              Giriş servisi bağlantısı hazır olduğunda burada devam edeceğiz.
+          {error && (
+            <Alert severity="error" className="login-alert">
+              {error}
+            </Alert>
+          )}
+          
+          {success && (
+            <Alert severity="success" className="login-alert">
+              Giriş başarılı.
             </Alert>
           )}
 

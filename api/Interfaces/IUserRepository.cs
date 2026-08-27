@@ -4,6 +4,7 @@ namespace api.Interfaces
     {
         Task<IEnumerable<Models.User>> GetAllUsersAsync();
         Task<Models.User?> GetUserByIdAsync(Guid id);
+        Task<Models.User?> GetUserByPhoneNumberAsync(string phoneNumber);
         Task<Models.User> CreateUserAsync(Models.User user);
         Task<Models.User?> UpdateUserAsync(Guid id, Dtos.User.UpdateUserRequestDto userDto);
         Task<bool> DeleteUserAsync(Guid id);

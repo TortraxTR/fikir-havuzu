@@ -23,6 +23,15 @@ namespace api.Repositories
         {
             return await _context.Users.FindAsync(id);
         }
+        
+        public async Task<User?> GetUserByPhoneNumberAsync(string phoneNumber)
+        {
+            return await _context.Users
+                .Include(user => user.Permissions)
+                .FirstOrDefaultAsync(user =>
+                    user.Phone == phoneNumber &&
+                    user.IsActive);
+}
 
         public async Task<User> CreateUserAsync(User user)
         {
