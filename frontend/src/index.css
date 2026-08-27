@@ -1,23 +1,23 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
+  --text: #635f5a;
+  --text-h: #20201d;
+  --bg: #f7f4ee;
+  --border: #e5e0d8;
+  --code-bg: #f0ede6;
+  --accent: #d85c43;
+  --accent-bg: rgba(216, 92, 67, 0.1);
+  --accent-border: rgba(216, 92, 67, 0.5);
+  --social-bg: rgba(240, 237, 230, 0.65);
   --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+    rgba(45, 38, 31, 0.12) 0 18px 42px -18px, rgba(45, 38, 31, 0.06) 0 4px 10px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: 'Avenir Next', 'Segoe UI', sans-serif;
+  --heading: Georgia, 'Times New Roman', serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
+  letter-spacing: 0.08px;
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -51,11 +51,9 @@
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1440px;
   margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -64,6 +62,8 @@
 
 body {
   margin: 0;
+  min-width: 320px;
+  background: var(--bg);
 }
 
 h1,
@@ -74,9 +74,10 @@ h2 {
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
+  font-size: clamp(42px, 5vw, 72px);
+  line-height: 102%;
+  letter-spacing: -1.8px;
+  margin: 22px 0;
   @media (max-width: 1024px) {
     font-size: 36px;
     margin: 20px 0;
@@ -108,4 +109,188 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+.login-page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(48px, 8vw, 112px) clamp(28px, 8vw, 128px);
+  box-sizing: border-box;
+  background: var(--bg);
+}
+
+.login-intro {
+  max-width: 600px;
+}
+
+.login-mark {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  color: #fffaf4;
+  background: var(--accent);
+  border-radius: 14px 14px 14px 4px;
+  box-shadow: 8px 8px 0 rgba(216, 92, 67, 0.16);
+}
+
+.login-mark span {
+  font-family: var(--heading);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.login-eyebrow {
+  margin-top: 46px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+}
+
+.login-description {
+  max-width: 480px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.login-statement {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  max-width: 390px;
+  margin-top: 72px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  color: var(--text-h);
+  font-family: var(--heading);
+  font-size: 19px;
+  line-height: 1.4;
+}
+
+.login-statement span {
+  color: var(--accent);
+  font-size: 36px;
+  line-height: 0.7;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 480px;
+  padding: clamp(28px, 5vw, 52px);
+  border: 1px solid rgba(229, 224, 216, 0.9);
+  border-radius: 8px;
+  box-sizing: border-box;
+  background: rgba(255, 253, 249, 0.82);
+  box-shadow: var(--shadow);
+}
+
+.login-card h2 {
+  position: relative;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  color: #1b1916;
+  font-family: var(--sans);
+  font-size: 30px;
+  font-weight: 750;
+  line-height: 1.12;
+  letter-spacing: -0.6px;
+}
+
+.login-card h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 38px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.login-card-description {
+  margin-bottom: 32px;
+}
+
+.login-fields {
+  display: grid;
+  gap: 20px;
+}
+
+.login-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 6px 0 26px;
+  font-size: 14px;
+}
+
+.login-options .MuiFormControlLabel-root {
+  margin-left: -9px;
+}
+
+.login-card .MuiButton-contained {
+  min-height: 50px;
+  border-radius: 5px;
+  box-shadow: none;
+  background: var(--accent);
+  font-weight: 700;
+  text-transform: none;
+}
+
+.login-card .MuiButton-contained:hover {
+  background: #bc4934;
+  box-shadow: 0 8px 16px rgba(216, 92, 67, 0.22);
+}
+
+.login-alert {
+  margin-top: 20px;
+  font-size: 13px;
+}
+
+.login-signup {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 14px;
+}
+
+@media (max-width: 800px) {
+  .login-page {
+    grid-template-columns: 1fr;
+    gap: 44px;
+    padding-block: 40px 56px;
+  }
+
+  .login-intro,
+  .login-card {
+    max-width: 600px;
+    margin-inline: auto;
+  }
+
+  .login-eyebrow {
+    margin-top: 32px;
+  }
+
+  .login-statement {
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding-inline: 20px;
+  }
+
+  .login-description {
+    font-size: 16px;
+  }
+
+  .login-options {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
