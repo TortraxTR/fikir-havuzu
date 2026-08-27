@@ -24,7 +24,7 @@ builder.Services.AddScoped<IProposalFileRepository, ProposalFileRepository>();
 
 var app = builder.Build();
 
-//await DbSeeder.SeedAsync(app.Services);
+await DbSeeder.SeedAsync(app.Services);
 
 if (app.Environment.IsDevelopment())
 {
