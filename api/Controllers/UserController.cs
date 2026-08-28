@@ -100,6 +100,20 @@ namespace api.Controllers
         return Ok(updatedUser.ToUserDto());
     }
 
+    // UPDATE: api/users/{id}/setActive
+    [HttpPut("{id}/setActive")]
+    public async Task<ActionResult<UserDto>> SetUserActive([FromRoute] Guid id, [FromBody] Dtos.User.SetUserActiveRequestDto requestDto)
+    {
+        var updatedUser = await _user_repo.SetUserActiveAsync(id, requestDto.IsActive);
+        if (updatedUser == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(updatedUser.ToUserDto());
+    }
+
+
     // DELETE: api/users/{id}
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteUser([FromRoute] Guid id)

@@ -7,6 +7,7 @@ namespace api.Interfaces
         Task<Models.User?> GetUserByPhoneNumberAsync(string phoneNumber);
         Task<Models.User> CreateUserAsync(Models.User user);
         Task<Models.User?> UpdateUserAsync(Guid id, Dtos.User.UpdateUserRequestDto userDto);
+        Task<Models.User?> SetUserActiveAsync(Guid id, bool isActive);
         Task<bool> DeleteUserAsync(Guid id);
         Task<IEnumerable<Models.Permission>> GetUserPermissionsAsync(Guid userId);
         Task<bool> AddPermissionToUserAsync(Guid userId, Guid permissionId);

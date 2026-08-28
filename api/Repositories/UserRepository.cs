@@ -58,6 +58,19 @@ namespace api.Repositories
             return existingUser;
         }
 
+        public async Task<User?> SetUserActiveAsync(Guid id, bool isActive)
+        {
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null)
+            {
+                return null;
+            }
+
+            existingUser.IsActive = isActive;
+            await _context.SaveChangesAsync();
+            return existingUser;
+        }
+
         public async Task<bool> DeleteUserAsync(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
