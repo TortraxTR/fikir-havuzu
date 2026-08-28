@@ -68,7 +68,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'grid', placeItems: 'center', bgcolor: '#f7f4ee', p: { xs: 2, sm: 4 } }}>
+    <Box sx={{ minHeight: '100svh', display: 'grid', placeItems: 'center', bgcolor: '#f7f4ee'}}>
       <Container maxWidth="sm" sx={{ display: 'flex', justifyContent: 'center' }}>
         <Paper elevation={0} component="section" sx={{ width: '100%', maxWidth: 440, p: { xs: 3, sm: 5 }, border: '1px solid #e5e0d8', borderRadius: 2, bgcolor: '#fffdf9', boxShadow: 'rgba(45, 38, 31, 0.12) 0 18px 42px -18px' }}>
           <Box component="form" onSubmit={handleSubmit} noValidate>

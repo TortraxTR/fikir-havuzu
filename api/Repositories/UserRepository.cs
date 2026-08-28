@@ -29,8 +29,7 @@ namespace api.Repositories
             return await _context.Users
                 .Include(user => user.Permissions)
                 .FirstOrDefaultAsync(user =>
-                    user.Phone == phoneNumber &&
-                    user.IsActive);
+                    user.Phone == phoneNumber);
 }
 
         public async Task<User> CreateUserAsync(User user)

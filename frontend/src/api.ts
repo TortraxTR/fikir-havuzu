@@ -16,11 +16,12 @@ export async function login(phoneNumber: string, password: string) {
   })
 
   if (!response.ok) {
-    throw new Error('Telefon numarası veya şifre hatalı. Lütfen tekrar deneyin.')
+    const errorText = await response.text();
+    console.log('Login error:', errorText);
+    throw new Error(errorText);
   }
 
   const data = await response.json()
-  // console.log('Login response:', data)
   return data
 }
 

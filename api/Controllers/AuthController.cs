@@ -28,7 +28,12 @@ namespace api.Controllers
             if (user == null ||
                 !BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.PasswordHash))
             {
-                return Unauthorized("Invalid phone number or password.");
+                return Unauthorized("Telefon numarası veya şifre hatalı.");
+
+            } else if (user.IsActive == false)
+            
+            {
+                return Unauthorized("Kullanıcı hesabı aktif değil. Lütfen yöneticinizle iletişime geçin.");
             }
         
             return Ok(user.ToLoginResponseDto());

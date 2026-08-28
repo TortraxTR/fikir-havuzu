@@ -135,9 +135,9 @@ export default function LandingPage() {
     }
 
     return (
-        <Box sx={{ minHeight: '100vh', bgcolor: '#f7f4ee', py: { xs: 3, md: 6 } }}>
-            <Container maxWidth="lg">
-                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 6, md: 10 } }}>
+        <Box sx={{ height: '100svh', boxSizing: 'border-box', overflow: 'hidden', bgcolor: '#f7f4ee', py: { xs: 2, md: 4 } }}>
+            <Container maxWidth="lg" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 3, md: 6 } }}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1.5, alignItems: 'center' }}>
                         <Box sx={{ width: 38, height: 38, display: 'grid', placeItems: 'center', bgcolor: '#d85c43', color: 'white', borderRadius: '12px 12px 12px 3px', fontFamily: 'Georgia', fontSize: 23, fontWeight: 700 }}>F</Box>
                         <Typography sx={{ fontWeight: 800, letterSpacing: '0.04em', color: '#20201d' }}>FİKİR HAVUZU</Typography>
@@ -145,15 +145,15 @@ export default function LandingPage() {
                     <Button
                         color="inherit"
                         startIcon={<LogoutIcon />}
-                        onClick={() => { localStorage.removeItem('user'); navigate('/login'); }}
+                        onClick={() => { localStorage.removeItem('user'); navigate('/'); }}
                         sx={{ textTransform: 'none', color: '#635f5a' }}
                     >
                         Çıkış yap
                     </Button>
                 </Box>
 
-                <Box sx={{ mb: 5 }}>
-                    <Typography component="h1" sx={{ mt: 1, mb: 1, fontFamily: 'Georgia', fontSize: { xs: '2.5rem', md: '4.25rem' }, lineHeight: 1.05, color: '#20201d' }}>
+                <Box sx={{ mb: { xs: 2, md: 4 } }}>
+                    <Typography component="h1" sx={{ mt: 1, mb: 1, fontFamily: 'Georgia', fontSize: { xs: '2.25rem', md: '4.25rem' }, lineHeight: 1.05, color: '#20201d' }}>
                         Hoş geldin, {user.name}.
                     </Typography>
                 </Box>
@@ -176,10 +176,10 @@ export default function LandingPage() {
                     <Tabs
                         value={Math.min(selectedTab, Math.max(tabs.length - 1, 0))}
                         onChange={(_, value: number) => setSelectedTab(value)}
-                        variant="scrollable"
-                        scrollButtons="auto"
+                        variant="fullWidth"
+                        scrollButtons={false}
                         aria-label="Kullanıcı çalışma alanları"
-                        sx={{ px: { xs: 1, md: 3 }, borderBottom: '1px solid #e5e0d8', '& .MuiTab-root': { minHeight: 72, textTransform: 'none', fontWeight: 700 } }}
+                        sx={{ px: { xs: 0, md: 3 }, borderBottom: '1px solid #e5e0d8', '& .MuiTabs-flexContainer': { width: '100%' }, '& .MuiTab-root': { minWidth: 0, minHeight: { xs: 58, md: 72 }, px: { xs: 0.5, md: 2 }, textTransform: 'none', fontWeight: 700, fontSize: { xs: '0.68rem', sm: '0.8rem', md: '0.875rem' }, lineHeight: 1.2, whiteSpace: 'normal' }, '& .MuiTab-iconWrapper': { mr: { xs: 0.5, md: 1 } } }}
                     >
                         {tabs.map((tab) => {
                             const Icon = tab.icon;
