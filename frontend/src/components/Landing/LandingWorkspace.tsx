@@ -1,6 +1,7 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Avatar, Box, Button, Divider, Tab, Tabs, Typography } from '@mui/material';
-import type { ComponentType } from 'react';
+import { useState, type ComponentType } from 'react';
+import UserList from '../User/UserList';
 
 export type LandingTab = {
     label: string;
@@ -10,21 +11,46 @@ export type LandingTab = {
     accent: string;
 };
 
+type WorkspaceOption = {
+    label: string;
+    content?: ComponentType;
+};
+
 type LandingWorkspaceProps = {
     tabs: LandingTab[];
     selectedTab: number;
     onTabChange: (tab: number) => void;
 };
 
+function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
+    if (tab.permission === 'KullaniciYonetimi') {
+        return [
+            { label: 'Kullanıcıları listele', content: UserList },
+            { label: 'Yeni kullanıcı ekle' },
+        ];
+    }
+
+    return [{ label: 'Genel bakış' }];
+}
+
 export default function LandingWorkspace({ tabs, selectedTab, onTabChange }: LandingWorkspaceProps) {
     const tab = tabs[selectedTab];
     const Icon = tab.icon;
+    const options = getWorkspaceOptions(tab);
+    const [selectedOption, setSelectedOption] = useState(0);
+    const option = options[selectedOption];
+    const OptionContent = option.content;
+
+    const handleTabChange = (nextTab: number) => {
+        onTabChange(nextTab);
+        setSelectedOption(0);
+    };
 
     return (
         <>
             <Tabs
                 value={selectedTab}
-                onChange={(_, value: number) => onTabChange(value)}
+                onChange={(_, value: number) => handleTabChange(value)}
                 variant="fullWidth"
                 scrollButtons={false}
                 aria-label="Kullanıcı çalışma alanları"
@@ -37,17 +63,36 @@ export default function LandingWorkspace({ tabs, selectedTab, onTabChange }: Lan
             </Tabs>
 
             <Box className="landing-tab-panel" role="tabpanel" sx={{ p: { xs: 3, md: 5 } }}>
-                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'normal', gap: 3 }}>
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
                     <Avatar sx={{ mb: 3, bgcolor: `${tab.accent}18`, color: tab.accent }}><Icon /></Avatar>
                     <Typography component="h2" sx={{ mb: 1, fontSize: '1.8rem', color: '#20201d' }}>{tab.label}</Typography>
                 </Box>
                 <Typography color="text.secondary">{tab.description}</Typography>
                 <Divider sx={{ my: 4 }} />
-                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
-                    <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ bgcolor: tab.accent, textTransform: 'none', boxShadow: 'none', '&:hover': { bgcolor: tab.accent, filter: 'brightness(0.9)', boxShadow: 'none' } }}>
-                        Çalışma alanını aç
-                    </Button>
-                </Box>
+
+                <Tabs
+                    value={selectedOption}
+                    onChange={(_, value: number) => setSelectedOption(value)}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    aria-label={`${tab.label} seçenekleri`}
+                    sx={{ mb: 3, borderBottom: '1px solid #e5e0d8' }}
+                >
+                    {options.map((workspaceOption) => (
+                        <Tab key={workspaceOption.label} label={workspaceOption.label} sx={{ textTransform: 'none' }} />
+                    ))}
+                </Tabs>
+
+                {OptionContent ? (
+                    <OptionContent />
+                ) : (
+                    <Box sx={{ py: 2 }}>
+                        <Typography color="text.secondary">Bu seçenek henüz kullanıma hazır değil.</Typography>
+                        <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mt: 3, bgcolor: tab.accent, textTransform: 'none', boxShadow: 'none', '&:hover': { bgcolor: tab.accent, filter: 'brightness(0.9)', boxShadow: 'none' } }}>
+                            Çalışma alanını aç
+                        </Button>
+                    </Box>
+                )}
             </Box>
         </>
     );

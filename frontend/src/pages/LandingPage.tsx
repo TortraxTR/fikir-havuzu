@@ -122,8 +122,8 @@ export default function LandingPage() {
     }
 
     return (
-        <Box sx={{ height: '100svh', boxSizing: 'border-box', overflow: 'hidden', bgcolor: '#f7f4ee', py: { xs: 2, md: 4 } }}>
-            <Container maxWidth={false} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ minHeight: '100svh', boxSizing: 'border-box', bgcolor: '#f7f4ee', py: { xs: 2, md: 4 } }}>
+            <Container maxWidth={false} sx={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
                 <LandingHeader onLogout={() => { localStorage.removeItem('user'); navigate('/'); }} />
 
                 <Box sx={{ mb: { xs: 2, md: 4 } }}>

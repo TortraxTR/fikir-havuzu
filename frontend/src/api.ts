@@ -5,6 +5,16 @@ export type Permission = {
   name: string;
 };
 
+export type User = {
+  id: string;
+  name: string;
+  surname: string;
+  phone: string;
+  registrationNo: string;
+  governmentId: string;
+  isActive: boolean;
+};
+
 // Login function to authenticate user
 export async function login(phoneNumber: string, password: string) {
   const response = await fetch(`${API_URL}/auth/login`, {
@@ -23,6 +33,19 @@ export async function login(phoneNumber: string, password: string) {
 
   const data = await response.json()
   return data
+}
+
+export async function fetchUsers(): Promise<User[]> {
+  const response = await fetch(`${API_URL}/users`, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Kullanıcılar alınamadı: ${response.statusText}`);
+  }
+
+  return (await response.json()) as User[];
 }
 
 // Fetch user permissions function
