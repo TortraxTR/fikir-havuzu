@@ -82,3 +82,15 @@ export async function addPermissionToUser(userId: string, permissionId: string):
     throw new Error(errorText || `Yetki eklenemedi: ${response.statusText}`);
   }
 }
+
+export async function removePermissionFromUser(userId: string, permissionId: string): Promise<void> {
+  const response = await fetch(`${API_URL}/users/${userId}/permissions/${permissionId}`, {
+    method: 'DELETE',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Yetki silinemedi: ${response.statusText}`);
+  }
+}

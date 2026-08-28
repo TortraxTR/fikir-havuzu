@@ -3,6 +3,7 @@ import { Avatar, Box, Button, Divider, Tab, Tabs, Typography } from '@mui/materi
 import { useState, type ComponentType } from 'react';
 import UserList from '../User/UserList';
 import PermissionAdd from '../Permission/PermissionAdd';
+import PermissionRemove from '../Permission/PermissionRemove';
 
 export type LandingTab = {
     label: string;
@@ -34,6 +35,7 @@ function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
     if (tab.permission === 'YetkiYonetimi') {
         return [
             { label: 'Kullanıcıya yetki ekle', content: PermissionAdd },
+            { label: 'Kullanıcıdan yetki sil', content: PermissionRemove },
         ];
     }
 
