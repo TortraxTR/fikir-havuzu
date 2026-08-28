@@ -79,7 +79,7 @@ export default function UserList() {
                             <TableCell>
                                 <Chip
                                     size="small"
-                                    label={user.isActive ? 'Aktif' : 'Pasif'}
+                                    label={user.isActive ? 'Aktif' : 'Deaktif'}
                                     color={user.isActive ? 'success' : 'default'}
                                 />
                             </TableCell>

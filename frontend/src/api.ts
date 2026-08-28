@@ -36,6 +36,49 @@ export async function fetchAllUsers(): Promise<User[]> {
   return (await response.json()) as User[];
 }
 
+export async function updateUser(user: User): Promise<User> {
+  const response = await fetch(`${API_URL}/users/${user.id}`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: user.name,
+      surname: user.surname,
+      phone: user.phone,
+      registrationNo: user.registrationNo,
+      governmentId: user.governmentId,
+      isActive: user.isActive,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Kullanıcı güncellenemedi: ${response.statusText}`);
+  }
+
+  return (await response.json()) as User;
+}
+
+export async function setUserActive(userId: string, isActive: boolean): Promise<User> {
+  const response = await fetch(`${API_URL}/users/${userId}/setActive`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ isActive }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Kullanıcı durumu güncellenemedi: ${response.statusText}`);
+  }
+
+  return (await response.json()) as User;
+}
+
 // Fetch user permissions function
 export async function fetchUserPermissions(id: string): Promise<Permission[]> {
   const response = await fetch(`${API_URL}/users/${id}/permissions`, {

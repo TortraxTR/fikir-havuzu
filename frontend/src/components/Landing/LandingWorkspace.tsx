@@ -2,6 +2,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Avatar, Box, Button, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { useState, type ComponentType } from 'react';
 import UserList from '../User/UserList';
+import UserSetActive from '../User/UserSetActive';
 import PermissionAdd from '../Permission/PermissionAdd';
 import PermissionRemove from '../Permission/PermissionRemove';
 
@@ -28,6 +29,7 @@ function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
     if (tab.permission === 'KullaniciYonetimi') {
         return [
             { label: 'Kullanıcıları listele', content: UserList },
+            { label: 'Kullanıcıyı aktive/deaktive et', content: UserSetActive },
             { label: 'Yeni kullanıcı ekle' },
         ];
     }
