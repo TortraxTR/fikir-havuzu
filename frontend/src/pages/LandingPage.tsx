@@ -9,9 +9,9 @@ import {
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import RateReviewIcon from '@mui/icons-material/RateReviewOutlined';
 import ManageAccountIcon from '@mui/icons-material/ManageAccountsOutlined';
-import LandingHeader from '../components/LandingHeader';
-import LandingStatus from '../components/LandingStatus';
-import LandingWorkspace, { type LandingTab } from '../components/LandingWorkspace';
+import LandingHeader from '../components/Landing/LandingHeader';
+import LandingStatus from '../components/Landing/LandingStatus';
+import LandingWorkspace, { type LandingTab } from '../components/Landing/LandingWorkspace';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserPermissions } from '../api';
 

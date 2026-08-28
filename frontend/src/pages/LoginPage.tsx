@@ -1,7 +1,7 @@
-import LoginBox from '../components/LoginBox';
-import LoginActions from '../components/LoginActions';
-import LoginHeader from '../components/LoginHeader';
-import LoginOptions from '../components/LoginOptions';
+import LoginBox from '../components/Login/LoginBox';
+import LoginActions from '../components/Login/LoginActions';
+import LoginHeader from '../components/Login/LoginHeader';
+import LoginOptions from '../components/Login/LoginOptions';
 import {
   Box,
   Container,
@@ -16,8 +16,6 @@ type LoginForm = {
   password: string;
   remember: boolean;
 };
-
-
 
 export default function LoginPage() {
   const navigate = useNavigate();
