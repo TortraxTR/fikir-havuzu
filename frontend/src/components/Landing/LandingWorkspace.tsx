@@ -2,6 +2,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Avatar, Box, Button, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { useState, type ComponentType } from 'react';
 import UserList from '../User/UserList';
+import PermissionAdd from '../Permission/PermissionAdd';
 
 export type LandingTab = {
     label: string;
@@ -27,6 +28,12 @@ function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
         return [
             { label: 'Kullanıcıları listele', content: UserList },
             { label: 'Yeni kullanıcı ekle' },
+        ];
+    }
+
+    if (tab.permission === 'YetkiYonetimi') {
+        return [
+            { label: 'Kullanıcıya yetki ekle', content: PermissionAdd },
         ];
     }
 

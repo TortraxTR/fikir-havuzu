@@ -1,19 +1,7 @@
+import type { Permission } from "./types/Permission";
+import type { User } from "./types/User";
+
 const API_URL = import.meta.env.VITE_API_URL;
-
-export type Permission = {
-  id: string;
-  name: string;
-};
-
-export type User = {
-  id: string;
-  name: string;
-  surname: string;
-  phone: string;
-  registrationNo: string;
-  governmentId: string;
-  isActive: boolean;
-};
 
 // Login function to authenticate user
 export async function login(phoneNumber: string, password: string) {
@@ -35,7 +23,7 @@ export async function login(phoneNumber: string, password: string) {
   return data
 }
 
-export async function fetchUsers(): Promise<User[]> {
+export async function fetchAllUsers(): Promise<User[]> {
   const response = await fetch(`${API_URL}/users`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
@@ -64,6 +52,33 @@ export async function fetchUserPermissions(id: string): Promise<Permission[]> {
   }
 
   const permissions = (await response.json()) as Permission[];
-  // console.log('User permissions:', permissions);
   return permissions;
+}
+
+export async function fetchAllPermissions(): Promise<Permission[]> {
+  const response = await fetch(`${API_URL}/permissions`, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Yetkiler alınamadı: ${response.statusText}`);
+  }
+  return (await response.json()) as Permission[];
+}
+
+export async function addPermissionToUser(userId: string, permissionId: string): Promise<void> {
+  const response = await fetch(`${API_URL}/users/${userId}/permissions`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ permissionId }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Yetki eklenemedi: ${response.statusText}`);
+  }
 }

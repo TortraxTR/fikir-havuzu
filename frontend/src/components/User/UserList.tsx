@@ -11,7 +11,9 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import { fetchUsers, type User } from '../../api';
+
+import type { User } from '../../types/User';
+import { fetchAllUsers } from '../../api';
 
 export default function UserList() {
     const [users, setUsers] = useState<User[]>([]);
@@ -21,7 +23,7 @@ export default function UserList() {
     useEffect(() => {
         let isMounted = true;
 
-        fetchUsers()
+        fetchAllUsers()
             .then((fetchedUsers) => {
                 if (isMounted) {
                     setUsers(fetchedUsers);
