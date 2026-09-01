@@ -3,8 +3,10 @@ import { Avatar, Box, Button, Divider, Tab, Tabs, Typography } from '@mui/materi
 import { useState, type ComponentType } from 'react';
 import UserList from '../User/UserList';
 import UserSetActive from '../User/UserSetActive';
+import UserAdd from '../User/UserAdd';
 import PermissionAdd from '../Permission/PermissionAdd';
 import PermissionRemove from '../Permission/PermissionRemove';
+import UserUpdate from '../User/UserUpdate';
 
 export type LandingTab = {
     label: string;
@@ -30,7 +32,8 @@ function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
         return [
             { label: 'Kullanıcıları listele', content: UserList },
             { label: 'Kullanıcıyı aktive/deaktive et', content: UserSetActive },
-            { label: 'Yeni kullanıcı ekle' },
+            { label: 'Yeni kullanıcı ekle', content: UserAdd },
+            { label: 'Kullanıcı bilgilerini güncelle', content: UserUpdate },
         ];
     }
 

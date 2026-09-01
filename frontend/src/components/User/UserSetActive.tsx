@@ -52,7 +52,7 @@ export default function UserSetActive() {
                 user.id === updatedUser.id ? updatedUser : user
             )));
             setSelectedUserId('');
-            setSuccess(`Kullanıcı ${updatedUser.isActive ? 'aktive' : 'pasife'} edildi.`);
+            setSuccess(`Kullanıcı ${updatedUser.isActive ? 'aktive' : 'deaktive'} edildi.`);
         } catch (requestError: unknown) {
             setError(requestError instanceof Error ? requestError.message : 'Kullanıcı durumu güncellenemedi.');
         } finally {
@@ -78,7 +78,7 @@ export default function UserSetActive() {
                 disabled={submitting}
                 renderOption={(props, user) => (
                     <li {...props} key={user.id}>
-                        {user.name} {user.surname} ({user.phone}) - {user.isActive ? 'Aktif' : 'Deaktif'}
+                        {user.name} {user.surname} ({user.phone}) - {user.isActive ? 'Aktif' : 'İnaktif'}
                     </li>
                 )}
                 renderInput={(params) => <TextField {...params} required label="Kullanıcı seç" />}

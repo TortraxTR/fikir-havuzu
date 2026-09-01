@@ -61,6 +61,32 @@ export async function updateUser(user: User): Promise<User> {
   return (await response.json()) as User;
 }
 
+export async function createUser(data: {
+  name: string;
+  surname: string;
+  phone: string;
+  registrationNo: string;
+  governmentId: string;
+  password: string;
+  isActive: boolean;
+}): Promise<User> {
+  const response = await fetch(`${API_URL}/users`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Kullanıcı oluşturulamadı: ${response.statusText}`);
+  }
+
+  return (await response.json()) as User;
+}
+
 export async function setUserActive(userId: string, isActive: boolean): Promise<User> {
   const response = await fetch(`${API_URL}/users/${userId}/setActive`, {
     method: 'PUT',
