@@ -25,6 +25,8 @@ appsettings.*.Local.json
 # Keep the example environment file
 !.env.example
 
+
+.github/
 # OS files
 .DS_Store
 Thumbs.db
