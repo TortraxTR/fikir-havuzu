@@ -11,6 +11,7 @@ public static class ProposalMapper
         {
             Id = proposal.Id,
             UserId = proposal.UserId,
+            UserName = $"{proposal.User.Name} {proposal.User.Surname}",
             CreatedAt = proposal.CreatedAt,
             Title = proposal.Title,
             Topic = proposal.Topic,

@@ -1,4 +1,5 @@
 import type { Permission } from "./types/Permission";
+import type { Proposal } from "./types/Proposal";
 import type { User } from "./types/User";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -36,6 +37,8 @@ export async function fetchAllUsers(): Promise<User[]> {
   return (await response.json()) as User[];
 }
 
+// Update user function to update user details
+
 export async function updateUser(user: User): Promise<User> {
   const response = await fetch(`${API_URL}/users/${user.id}`, {
     method: 'PUT',
@@ -60,6 +63,8 @@ export async function updateUser(user: User): Promise<User> {
 
   return (await response.json()) as User;
 }
+
+// Create user function to create a new user
 
 export async function createUser(data: {
   name: string;
@@ -136,6 +141,8 @@ export async function fetchAllPermissions(): Promise<Permission[]> {
   return (await response.json()) as Permission[];
 }
 
+// Add permission to user function
+
 export async function addPermissionToUser(userId: string, permissionId: string): Promise<void> {
   const response = await fetch(`${API_URL}/users/${userId}/permissions`, {
     method: 'POST',
@@ -152,6 +159,8 @@ export async function addPermissionToUser(userId: string, permissionId: string):
   }
 }
 
+// Remove permission from user function
+
 export async function removePermissionFromUser(userId: string, permissionId: string): Promise<void> {
   const response = await fetch(`${API_URL}/users/${userId}/permissions/${permissionId}`, {
     method: 'DELETE',
@@ -162,4 +171,36 @@ export async function removePermissionFromUser(userId: string, permissionId: str
     const errorText = await response.text();
     throw new Error(errorText || `Yetki silinemedi: ${response.statusText}`);
   }
+}
+
+// Fetch all proposals function
+
+export async function fetchAllProposals(): Promise<Proposal[]> {
+  const response = await fetch(`${API_URL}/proposals`, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Fikirler/Öneriler alınamadı: ${response.statusText}`);
+  }
+
+  return (await response.json()) as Proposal[];
+}
+
+// Fetch user by ID function
+
+export async function fetchUserById(userId: string): Promise<User> {
+  const response = await fetch(`${API_URL}/users/${userId}`, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error('Kullanıcı bulunamadı.');
+    }
+    throw new Error(`Kullanıcı alınamadı: ${response.statusText}`);
+  }
+  return (await response.json()) as User;
 }

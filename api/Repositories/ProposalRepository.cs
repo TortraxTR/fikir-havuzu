@@ -15,7 +15,7 @@ namespace api.Repositories
 
         public async Task<IEnumerable<Proposal>> GetAllProposalsAsync()
         {
-            return await _context.Proposals.ToListAsync();
+            return await _context.Proposals.Include(p => p.User).ToListAsync();
         }
 
         public async Task<Proposal?> GetProposalByIdAsync(Guid id)

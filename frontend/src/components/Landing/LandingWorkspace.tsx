@@ -7,6 +7,7 @@ import UserAdd from '../User/UserAdd';
 import PermissionAdd from '../Permission/PermissionAdd';
 import PermissionRemove from '../Permission/PermissionRemove';
 import UserUpdate from '../User/UserUpdate';
+import ProposalList from '../Proposal/ProposalList';
 
 export type LandingTab = {
     label: string;
@@ -34,6 +35,12 @@ function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
             { label: 'Kullanıcıyı aktive/deaktive et', content: UserSetActive },
             { label: 'Yeni kullanıcı ekle', content: UserAdd },
             { label: 'Kullanıcı bilgilerini güncelle', content: UserUpdate },
+        ];
+    }
+
+    if (tab.permission === 'Fikiryonetimi') {
+        return [
+            { label: 'Fikirleri/Önerileri listele', content: ProposalList },
         ];
     }
 

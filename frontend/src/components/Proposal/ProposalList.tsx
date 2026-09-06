@@ -1,6 +1,7 @@
 import { Typography, Alert, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { useState, useEffect } from "react";
 import type { Proposal } from "../../types/Proposal";
+import { fetchAllProposals } from "../../api";
 
 export default function ProposalList() {
 
@@ -51,7 +52,7 @@ export default function ProposalList() {
                 <TableHead>
                     <TableRow>
                         <TableCell>Başlık</TableCell>
-                        <TableCell>Açıklama</TableCell>
+                        <TableCell>Konu</TableCell>
                         <TableCell>Oluşturan</TableCell>
                         <TableCell>Oluşturulma Tarihi</TableCell>
                     </TableRow>
@@ -60,8 +61,8 @@ export default function ProposalList() {
                     {proposals.map((proposal) => (
                         <TableRow key={proposal.id}>
                             <TableCell>{proposal.title}</TableCell>
-                            <TableCell>{proposal.description}</TableCell>
-                            <TableCell>{proposal.creatorName}</TableCell>
+                            <TableCell>{proposal.topic}</TableCell>
+                            <TableCell>{proposal.userName}</TableCell>
                             <TableCell>{new Date(proposal.createdAt).toLocaleString()}</TableCell>
                         </TableRow>
                     ))}

@@ -1,7 +1,10 @@
 export type Proposal = {
     id: string;
     title: string;
-    description: string;
-    createdBy: string;
+    topic: string;
+    purpose: string;
+    explanation: string;
+    userId: string;
+    userName: string;
     createdAt: string;
 }
