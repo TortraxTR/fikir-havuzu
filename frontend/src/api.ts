@@ -188,6 +188,30 @@ export async function fetchAllProposals(): Promise<Proposal[]> {
   return (await response.json()) as Proposal[];
 }
 
+export async function createProposal(data: {
+  userId: string;
+  title: string;
+  topic: string;
+  purpose: string;
+  explanation: string;
+}): Promise<Proposal> {
+  const response = await fetch(`${API_URL}/proposals`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Fikir/öneri oluşturulamadı: ${response.statusText}`);
+  }
+
+  return (await response.json()) as Proposal;
+}
+
 // Fetch user by ID function
 
 export async function fetchUserById(userId: string): Promise<User> {

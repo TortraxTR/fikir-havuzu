@@ -8,6 +8,7 @@ import PermissionAdd from '../Permission/PermissionAdd';
 import PermissionRemove from '../Permission/PermissionRemove';
 import UserUpdate from '../User/UserUpdate';
 import ProposalList from '../Proposal/ProposalList';
+import ProposalCreate from '../Proposal/ProposalCreate';
 
 export type LandingTab = {
     label: string;
@@ -39,6 +40,7 @@ function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
 
     if (tab.permission === 'FikirYonetimi') {
         return [
+            { label: 'Yeni fikir/öneri oluştur', content: ProposalCreate },
             { label: 'Fikirleri/Önerileri listele', content: ProposalList },
         ];
     }
