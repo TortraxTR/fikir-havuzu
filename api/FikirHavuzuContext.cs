@@ -64,6 +64,8 @@ public partial class FikirHavuzuContext : DbContext
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("id");
+            entity.HasIndex(e => e.Code, "Permission_code_key").IsUnique();
+            entity.Property(e => e.Code).HasColumnName("code");
             entity.Property(e => e.Name).HasColumnName("name");
         });
 

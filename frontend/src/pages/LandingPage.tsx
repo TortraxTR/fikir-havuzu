@@ -22,22 +22,29 @@ type LoggedInUser = {
     permissions?: string[];
 };
 
+const PERMISSIONS = {
+    userManagement: 'USER_MANAGEMENT',
+    permissionManagement: 'PERMISSION_MANAGEMENT',
+    proposalCreate: 'PROPOSAL_CREATE',
+    evaluationCreate: 'EVALUATION_CREATE',
+} as const;
+
 const availableTabs: LandingTab[] = [
     {
         label: 'Kullanıcı Yönetimi',
-        permission: 'KullaniciYonetimi',
+        permission: PERMISSIONS.userManagement,
         description: 'Yeni kullanıcılar ekle ve mevcut kullanıcıları düzenle.',
         icon: ManageAccountIcon,
     },
     {
         label: 'Fikir ve Öneri',
-        permission: 'FikirYonetimi',
+        permission: PERMISSIONS.proposalCreate,
         description: 'Yeni fikir ve öneri oluştur, mevcut fikir ve önerileri incele ve değerlendir.',
         icon: RateReviewIcon,
     },
     {
         label: 'Yetki Yönetimi',
-        permission: 'YetkiYonetimi',
+        permission: PERMISSIONS.permissionManagement,
         description: 'Kullanıcı yetkilerini yönet.',
         icon: TaskAltOutlinedIcon,
     },
@@ -79,7 +86,7 @@ export default function LandingPage() {
             .then((userPermissions) => {
                 if (isMounted) {
                     if (userPermissions.length > 0) {
-                        setPermissions(userPermissions.map((permission) => permission.name));
+                        setPermissions(userPermissions.map((permission) => permission.code));
                     }
                 }
             })
@@ -104,7 +111,10 @@ export default function LandingPage() {
     );
 
     const tabs = availableTabs.filter((tab) =>
-        tab.permission && permissionNames.has(tab.permission.trim().toLowerCase()),
+        tab.permission && (
+            permissionNames.has(tab.permission.trim().toLowerCase()) ||
+            (tab.permission === PERMISSIONS.proposalCreate && permissionNames.has(PERMISSIONS.evaluationCreate.toLowerCase()))
+        ),
     );
 
     if (!user) {

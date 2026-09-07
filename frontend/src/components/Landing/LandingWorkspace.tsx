@@ -28,8 +28,15 @@ type LandingWorkspaceProps = {
     onTabChange: (tab: number) => void;
 };
 
+const PERMISSIONS = {
+    userManagement: 'USER_MANAGEMENT',
+    permissionManagement: 'PERMISSION_MANAGEMENT',
+    proposalCreate: 'PROPOSAL_CREATE',
+    evaluationCreate: 'EVALUATION_CREATE',
+} as const;
+
 function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
-    if (tab.permission === 'KullaniciYonetimi') {
+    if (tab.permission === PERMISSIONS.userManagement) {
         return [
             { label: 'Kullanıcıları listele', content: UserList },
             { label: 'Kullanıcıyı aktive/deaktive et', content: UserSetActive },
@@ -38,14 +45,14 @@ function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
         ];
     }
 
-    if (tab.permission === 'FikirYonetimi') {
+    if (tab.permission === PERMISSIONS.proposalCreate) {
         return [
             { label: 'Yeni fikir/öneri oluştur', content: ProposalCreate },
             { label: 'Fikirleri/Önerileri listele', content: ProposalList },
         ];
     }
 
-    if (tab.permission === 'YetkiYonetimi') {
+    if (tab.permission === PERMISSIONS.permissionManagement) {
         return [
             { label: 'Kullanıcıya yetki ekle', content: PermissionAdd },
             { label: 'Kullanıcıdan yetki sil', content: PermissionRemove },
@@ -86,7 +93,7 @@ export default function LandingWorkspace({ tabs, selectedTab, onTabChange }: Lan
 
             <Box className="landing-tab-panel" role="tabpanel">
                 <Box className="workspace-heading">
-                    <Avatar className={`workspace-avatar ${tab.permission === 'FikirYonetimi' ? 'workspace-avatar-proposals' : tab.permission === 'YetkiYonetimi' ? 'workspace-avatar-permissions' : 'workspace-avatar-users'}`}><Icon /></Avatar>
+                    <Avatar className={`workspace-avatar ${tab.permission === PERMISSIONS.proposalCreate ? 'workspace-avatar-proposals' : tab.permission === PERMISSIONS.permissionManagement ? 'workspace-avatar-permissions' : 'workspace-avatar-users'}`}><Icon /></Avatar>
                     <Typography className="workspace-title" component="h2">{tab.label}</Typography>
                 </Box>
                 <Typography color="text.secondary">{tab.description}</Typography>
@@ -110,7 +117,7 @@ export default function LandingWorkspace({ tabs, selectedTab, onTabChange }: Lan
                 ) : (
                     <Box className="workspace-placeholder">
                         <Typography color="text.secondary">Bu seçenek henüz kullanıma hazır değil.</Typography>
-                        <Button variant="contained" endIcon={<ArrowForwardIcon />} className={`workspace-action ${tab.permission === 'FikirYonetimi' ? 'workspace-action-proposals' : tab.permission === 'YetkiYonetimi' ? 'workspace-action-permissions' : 'workspace-action-users'}`}>
+                        <Button variant="contained" endIcon={<ArrowForwardIcon />} className={`workspace-action ${tab.permission === PERMISSIONS.proposalCreate ? 'workspace-action-proposals' : tab.permission === PERMISSIONS.permissionManagement ? 'workspace-action-permissions' : 'workspace-action-users'}`}>
                             Çalışma alanını aç
                         </Button>
                     </Box>

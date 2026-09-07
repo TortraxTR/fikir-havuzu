@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api;
@@ -11,9 +12,11 @@ using api;
 namespace api.Migrations
 {
     [DbContext(typeof(FikirHavuzuContext))]
-    partial class FikirHavuzuContextModelSnapshot : ModelSnapshot
+    [Migration("20260907101849_PermissionCodes")]
+    partial class PermissionCodes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -44,6 +44,7 @@ namespace api.Controllers
         {
             var permission = new Permission
             {
+                Code = permissionDto.Code,
                 Name = permissionDto.Name
             };
 
@@ -57,6 +58,7 @@ namespace api.Controllers
         {
             var permission = new Permission
             {
+                Code = permissionDto.Code,
                 Name = permissionDto.Name
             };
 

@@ -10,6 +10,7 @@ namespace api.Mappers.PermissionMappers
             return new PermissionDto
             {
                 Id = permission.Id,
+                Code = permission.Code,
                 Name = permission.Name == null ? string.Empty : permission.Name
             };
         }
@@ -18,12 +19,14 @@ namespace api.Mappers.PermissionMappers
         {
             return new Permission
             {
+                Code = createPermissionRequestDto.Code,
                 Name = createPermissionRequestDto.Name
             };
         }
 
         public static void UpdatePermission(this Permission permission, UpdatePermissionRequestDto updatePermissionRequestDtos)
         {
+            permission.Code = updatePermissionRequestDtos.Code;
             permission.Name = updatePermissionRequestDtos.Name;
         }
     }

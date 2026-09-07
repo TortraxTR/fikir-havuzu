@@ -55,6 +55,12 @@ namespace api.Controllers
                 return BadRequest("User does not exist.");
             }
 
+            var permissions = await _userRepository.GetUserPermissionsAsync(user.Id);
+            if (!user.IsActive || !permissions.Any(permission => permission.Code == "EVALUATION_CREATE"))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Değerlendirme oluşturma yetkisi gereklidir.");
+            }
+
             var proposal = await _proposalRepository.GetProposalByIdAsync(evaluationDto.ProposalId);
             if (proposal == null)
             {

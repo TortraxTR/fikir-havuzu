@@ -260,7 +260,7 @@ body {
 .detail-explanation-section { width: 100%; }
 .detail-section-label { margin-bottom: 8px !important; color: var(--text); font-size: 0.75rem !important; font-weight: 800 !important; letter-spacing: 0.12em; text-transform: uppercase; }
 .detail-explanation { width: 100%; padding: 20px 0; }
-.detail-explanation-text { width: 100%; color: var(--text); line-height: 1.75 !important; white-space: pre-wrap; }
+.detail-explanation-text { width: 100%; color: var(--text); line-height: 1.75 !important; text-align: justify; white-space: pre-wrap; }
 
 .form-stack { display: grid; gap: 16px; width: 100%; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }

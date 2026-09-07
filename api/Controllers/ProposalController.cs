@@ -123,6 +123,12 @@ namespace api.Controllers
                 return BadRequest("User does not exist.");
             }
 
+            var permissions = await _userRepository.GetUserPermissionsAsync(user.Id);
+            if (!user.IsActive || !permissions.Any(permission => permission.Code == "EVALUATION_CREATE"))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Değerlendirme oluşturma yetkisi gereklidir.");
+            }
+
             var evaluation = evaluationDto.ToEvaluation();
             evaluation.ProposalId = proposalId;
 
@@ -143,6 +149,12 @@ namespace api.Controllers
             if (user == null)
             {
                 return BadRequest("User does not exist.");
+            }
+
+            var permissions = await _userRepository.GetUserPermissionsAsync(user.Id);
+            if (!user.IsActive || !permissions.Any(permission => permission.Code == "PROPOSAL_CREATE"))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Öneri oluşturma yetkisi gereklidir.");
             }
 
             var createdProposal = await _proposalRepository.CreateProposalAsync(proposalDto.ToProposal());
