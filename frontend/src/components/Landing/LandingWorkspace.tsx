@@ -14,7 +14,6 @@ export type LandingTab = {
     permission?: string;
     description: string;
     icon: ComponentType;
-    accent: string;
 };
 
 type WorkspaceOption = {
@@ -38,7 +37,7 @@ function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
         ];
     }
 
-    if (tab.permission === 'Fikiryonetimi') {
+    if (tab.permission === 'FikirYonetimi') {
         return [
             { label: 'Fikirleri/Önerileri listele', content: ProposalList },
         ];
@@ -75,7 +74,7 @@ export default function LandingWorkspace({ tabs, selectedTab, onTabChange }: Lan
                 variant="fullWidth"
                 scrollButtons={false}
                 aria-label="Kullanıcı çalışma alanları"
-                sx={{ px: { xs: 0, md: 3 }, borderBottom: '1px solid #e5e0d8', '& .MuiTabs-flexContainer': { width: '100%' }, '& .MuiTab-root': { minWidth: 0, minHeight: { xs: 58, md: 72 }, px: { xs: 0.5, md: 2 }, textTransform: 'none', fontWeight: 700, fontSize: { xs: '0.68rem', sm: '0.8rem', md: '0.875rem' }, lineHeight: 1.2, whiteSpace: 'normal' }, '& .MuiTab-iconWrapper': { mr: { xs: 0.5, md: 1 } } }}
+                className="landing-tabs"
             >
                 {tabs.map((workspaceTab) => {
                     const WorkspaceIcon = workspaceTab.icon;
@@ -83,13 +82,13 @@ export default function LandingWorkspace({ tabs, selectedTab, onTabChange }: Lan
                 })}
             </Tabs>
 
-            <Box className="landing-tab-panel" role="tabpanel" sx={{ p: { xs: 3, md: 5 } }}>
-                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
-                    <Avatar sx={{ mb: 3, bgcolor: `${tab.accent}18`, color: tab.accent }}><Icon /></Avatar>
-                    <Typography component="h2" sx={{ mb: 1, fontSize: '1.8rem', color: '#20201d' }}>{tab.label}</Typography>
+            <Box className="landing-tab-panel" role="tabpanel">
+                <Box className="workspace-heading">
+                    <Avatar className={`workspace-avatar ${tab.permission === 'FikirYonetimi' ? 'workspace-avatar-proposals' : tab.permission === 'YetkiYonetimi' ? 'workspace-avatar-permissions' : 'workspace-avatar-users'}`}><Icon /></Avatar>
+                    <Typography className="workspace-title" component="h2">{tab.label}</Typography>
                 </Box>
                 <Typography color="text.secondary">{tab.description}</Typography>
-                <Divider sx={{ my: 4 }} />
+                <Divider className="workspace-divider" />
 
                 <Tabs
                     value={selectedOption}
@@ -97,19 +96,19 @@ export default function LandingWorkspace({ tabs, selectedTab, onTabChange }: Lan
                     variant="scrollable"
                     scrollButtons="auto"
                     aria-label={`${tab.label} seçenekleri`}
-                    sx={{ mb: 3, borderBottom: '1px solid #e5e0d8' }}
+                    className="workspace-options"
                 >
                     {options.map((workspaceOption) => (
-                        <Tab key={workspaceOption.label} label={workspaceOption.label} sx={{ textTransform: 'none' }} />
+                        <Tab key={workspaceOption.label} label={workspaceOption.label} className="workspace-option-tab" />
                     ))}
                 </Tabs>
 
                 {OptionContent ? (
                     <OptionContent />
                 ) : (
-                    <Box sx={{ py: 2 }}>
+                    <Box className="workspace-placeholder">
                         <Typography color="text.secondary">Bu seçenek henüz kullanıma hazır değil.</Typography>
-                        <Button variant="contained" endIcon={<ArrowForwardIcon />} sx={{ mt: 3, bgcolor: tab.accent, textTransform: 'none', boxShadow: 'none', '&:hover': { bgcolor: tab.accent, filter: 'brightness(0.9)', boxShadow: 'none' } }}>
+                        <Button variant="contained" endIcon={<ArrowForwardIcon />} className={`workspace-action ${tab.permission === 'FikirYonetimi' ? 'workspace-action-proposals' : tab.permission === 'YetkiYonetimi' ? 'workspace-action-permissions' : 'workspace-action-users'}`}>
                             Çalışma alanını aç
                         </Button>
                     </Box>

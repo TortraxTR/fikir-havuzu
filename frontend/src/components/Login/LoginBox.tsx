@@ -14,7 +14,7 @@ type LoginBoxProps = {
 
 export default function LoginBox({ form, handleChange, showPassword, setShowPassword }: LoginBoxProps) {
     return (
-        <Box sx={{ display: 'grid', gap: 2.5 }}>
+        <Box className="login-form-fields">
         <TextField
             fullWidth
             required

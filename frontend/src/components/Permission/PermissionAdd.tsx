@@ -69,7 +69,7 @@ export default function PermissionAdd() {
 	}
 
 	return (
-		<Box component="form" onSubmit={handleSubmit} sx={{ display: 'grid', gap: 2, width: '100%' }}>
+		<Box component="form" onSubmit={handleSubmit} className="form-stack">
 			<Autocomplete
 				options={users}
 				getOptionLabel={(user) => `${user.name} ${user.surname} (${user.phone})`}

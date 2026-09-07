@@ -3,6 +3,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { useState, useEffect } from "react";
 import type { Proposal } from "../../types/Proposal";
 import { fetchAllProposals } from "../../api";
+import ProposalDetail from './ProposalDetail';
 
 function getProposalDate(proposal: Proposal): string {
     const date = new Date(proposal.createdAt);
@@ -27,6 +28,7 @@ export default function ProposalList() {
     const [creatorFilter, setCreatorFilter] = useState('');
     const [dateFilter, setDateFilter] = useState('');
     const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null);
+    const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
 
     useEffect(() => {
         let isMounted = true;
@@ -69,6 +71,15 @@ export default function ProposalList() {
         return <Typography color="text.secondary">Henüz fikir/öneri bulunmuyor.</Typography>;
     }
 
+    if (selectedProposal) {
+        return (
+            <ProposalDetail
+                proposal={selectedProposal}
+                onBack={() => setSelectedProposal(null)}
+            />
+        );
+    }
+
     const titleOptions = [...new Set(proposals.map((proposal) => proposal.title))].sort();
     const topicOptions = [...new Set(proposals.map((proposal) => proposal.topic))].sort();
     const creatorOptions = [...new Set(proposals.map((proposal) => proposal.userName))].sort();
@@ -97,7 +108,7 @@ export default function ProposalList() {
                 variant="outlined"
                 startIcon={<FilterListIcon />}
                 onClick={(event) => setFilterMenuAnchor(event.currentTarget)}
-                sx={{ mb: 3 }}
+                className="proposal-list-filter"
             >
                 Filtrele
             </Button>
@@ -106,13 +117,9 @@ export default function ProposalList() {
                 anchorEl={filterMenuAnchor}
                 open={Boolean(filterMenuAnchor)}
                 onClose={() => setFilterMenuAnchor(null)}
-                sx={{
-                    '& .MuiList-root': {
-                        padding: 0,
-                    },
-                }}
+                className="proposal-filter-menu"
             >
-                <Box sx={{ display: 'grid', gap: 2, p: 2, width: { xs: 280, sm: 360 } }}>
+                <Box className="proposal-filter-fields">
                     <Autocomplete
                         freeSolo
                         open={false}
@@ -181,7 +188,20 @@ export default function ProposalList() {
                         </TableHead>
                         <TableBody>
                             {filteredProposals.map((proposal) => (
-                                <TableRow key={proposal.id}>
+                                <TableRow
+                                    key={proposal.id}
+                                    hover
+                                    tabIndex={0}
+                                    role="button"
+                                    onClick={() => setSelectedProposal(proposal)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter' || event.key === ' ') {
+                                            event.preventDefault();
+                                            setSelectedProposal(proposal);
+                                        }
+                                    }}
+                                    className="proposal-row"
+                                >
                                     <TableCell>{proposal.title}</TableCell>
                                     <TableCell>{proposal.topic}</TableCell>
                                     <TableCell>{proposal.userName}</TableCell>

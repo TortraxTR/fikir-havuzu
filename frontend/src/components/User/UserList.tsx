@@ -58,14 +58,14 @@ export default function UserList() {
     }
 
     return (
-        <TableContainer component={Paper} elevation={0} sx={{ width: '100%', border: '1px solid #e5e0d8' }}>
-            <Table aria-label="Kullanıcı listesi" sx={{ minWidth: 0 }}>
+        <TableContainer component={Paper} elevation={0} className="user-table">
+            <Table aria-label="Kullanıcı listesi" className="user-table-content">
                 <TableHead>
                     <TableRow>
                         <TableCell>Ad Soyad</TableCell>
                         <TableCell>Telefon</TableCell>
-                        <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Sicil No.</TableCell>
-                        <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>T.C. Kimlik No.</TableCell>
+                        <TableCell className="mobile-hidden-sm">Sicil No.</TableCell>
+                        <TableCell className="mobile-hidden-md">T.C. Kimlik No.</TableCell>
                         <TableCell>Durum</TableCell>
                     </TableRow>
                 </TableHead>
@@ -74,8 +74,8 @@ export default function UserList() {
                         <TableRow key={user.id} hover>
                             <TableCell>{user.name} {user.surname}</TableCell>
                             <TableCell>{user.phone}</TableCell>
-                            <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{user.registrationNo}</TableCell>
-                            <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{user.governmentId}</TableCell>
+                            <TableCell className="mobile-hidden-sm">{user.registrationNo}</TableCell>
+                            <TableCell className="mobile-hidden-md">{user.governmentId}</TableCell>
                             <TableCell>
                                 <Chip
                                     size="small"

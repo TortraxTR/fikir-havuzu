@@ -178,7 +178,7 @@ export default function UserUpdate() {
     }
 
     return (
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'grid', gap: 2, width: '100%' }}>
+        <Box component="form" onSubmit={handleSubmit} className="form-stack">
             <Autocomplete
                 options={users}
                 getOptionLabel={(user) => `${user.name} ${user.surname} (${user.phone})`}
@@ -199,7 +199,7 @@ export default function UserUpdate() {
 
             {selectedUser && formData && (
                 <>
-                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+                    <Box className="form-grid">
                         <TextField
                             name="name"
                             label="Ad"
@@ -224,7 +224,7 @@ export default function UserUpdate() {
                         />
                     </Box>
 
-                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+                    <Box className="form-grid">
                         <TextField
                             name="phone"
                             label="Telefon Numarası"

@@ -128,8 +128,8 @@ export default function UserAdd() {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'grid', gap: 2, width: '100%' }}>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+    <Box component="form" onSubmit={handleSubmit} className="form-stack">
+      <Box className="form-grid">
         <TextField
           name="name"
           label="Ad"
@@ -154,7 +154,7 @@ export default function UserAdd() {
         />
       </Box>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+      <Box className="form-grid">
         <TextField
           name="phone"
           label="Telefon Numarası"
@@ -193,7 +193,7 @@ export default function UserAdd() {
         fullWidth
       />
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+      <Box className="form-grid">
         <TextField
           name="password"
           label="Şifre"

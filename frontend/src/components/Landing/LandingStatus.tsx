@@ -7,7 +7,7 @@ type LandingStatusProps = {
 
 export default function LandingStatus({ message, error = false }: LandingStatusProps) {
     return (
-        <Box sx={{ p: { xs: 3, md: 5 } }}>
+        <Box className="status-box">
             <Typography color={error ? 'error' : 'text.secondary'}>{message}</Typography>
         </Box>
     );

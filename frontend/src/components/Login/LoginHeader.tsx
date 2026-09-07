@@ -3,10 +3,10 @@ import { Box, Typography } from '@mui/material';
 export default function LoginHeader() {
     return (
         <Box>
-            <Typography sx={{ mb: 1, color: '#d85c43', fontWeight: 800, letterSpacing: '0.04em' }}>
+            <Typography className="login-heading-eyebrow">
                 FİKİR HAVUZU
             </Typography>
-            <Typography component="h1" sx={{ mb: 1, fontFamily: 'Georgia', fontSize: '2.5rem', color: '#20201d' }}>
+            <Typography className="login-heading" component="h1">
                 Giriş yap
             </Typography>
         </Box>

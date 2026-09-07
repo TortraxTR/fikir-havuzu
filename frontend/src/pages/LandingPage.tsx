@@ -28,21 +28,18 @@ const availableTabs: LandingTab[] = [
         permission: 'KullaniciYonetimi',
         description: 'Yeni kullanıcılar ekle ve mevcut kullanıcıları düzenle.',
         icon: ManageAccountIcon,
-        accent: '#d85c43',
     },
     {
-        label: 'Fikir ve Öneri Yönetimi',
-        permission: 'Fikiryonetimi',
+        label: 'Fikir ve Öneri',
+        permission: 'FikirYonetimi',
         description: 'Yeni fikir ve öneri oluştur, mevcut fikir ve önerileri incele ve değerlendir.',
         icon: RateReviewIcon,
-        accent: '#237a73',
     },
     {
         label: 'Yetki Yönetimi',
         permission: 'YetkiYonetimi',
         description: 'Kullanıcı yetkilerini yönet.',
         icon: TaskAltOutlinedIcon,
-        accent: '#364f7d',
     },
 ];
 
@@ -112,8 +109,8 @@ export default function LandingPage() {
 
     if (!user) {
         return (
-            <Container maxWidth={false} sx={{ py: 10 }}>
-                <Paper sx={{ p: { xs: 4, sm: 7 }, borderRadius: 2 }} component="section">
+            <Container className="page-container" maxWidth={false}>
+                <Paper className="login-paper" component="section">
                     <Typography variant="h3" gutterBottom>Oturum bulunamadı</Typography>
                     <Typography color="text.secondary">Devam etmek için giriş yapmalısın.</Typography>
                 </Paper>
@@ -122,17 +119,17 @@ export default function LandingPage() {
     }
 
     return (
-        <Box sx={{ minHeight: '100svh', boxSizing: 'border-box', bgcolor: '#f7f4ee', py: { xs: 2, md: 4 } }}>
-            <Container maxWidth={false} sx={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box className="page-shell landing-page-shell">
+            <Container className="page-container landing-container" maxWidth={false}>
                 <LandingHeader onLogout={() => { localStorage.removeItem('user'); navigate('/'); }} />
 
-                <Box sx={{ mb: { xs: 2, md: 4 } }}>
-                    <Typography component="h1" sx={{ mt: 1, mb: 1, fontFamily: 'Georgia', fontSize: { xs: '2.25rem', md: '4.25rem' }, lineHeight: 1.05, color: '#20201d' }}>
+                <Box className="landing-greeting-wrap">
+                    <Typography className="landing-greeting" component="h1">
                         Hoş geldin, {user.name}.
                     </Typography>
                 </Box>
 
-                <Paper elevation={0} component="section" sx={{ overflow: 'hidden', border: '1px solid #e5e0d8', borderRadius: 2, bgcolor: '#fffdf9' }}>
+                <Paper className="landing-paper" elevation={0} component="section">
                     {permissionsLoading && <LandingStatus message="Yetkiler yükleniyor..." />}
 
                     {permissionsError && <LandingStatus message={permissionsError} error />}
@@ -142,8 +139,8 @@ export default function LandingPage() {
                     {tabs.length > 0 && <LandingWorkspace tabs={tabs} selectedTab={selectedTab} onTabChange={setSelectedTab} />}
 
                     {tabs.length === 0 && (
-                        <Box sx={{ p: { xs: 3, md: 5 } }}>
-                            <Typography component="h2" sx={{ mb: 1 }}>Henüz atanmış yetki yok</Typography>
+                        <Box className="landing-tab-panel">
+                            <Typography component="h2">Henüz atanmış yetki yok</Typography>
                             <Typography color="text.secondary">Çalışma alanlarını görmek için bir yetki atanmasını bekle.</Typography>
                         </Box>
                     )}

@@ -8,7 +8,7 @@ type LoginOptionsProps = {
 
 export default function LoginOptions({ remember, handleChange }: LoginOptionsProps) {
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1, mb: 3 }}>
+        <Box className="login-options">
             <FormControlLabel
                 control={<Checkbox name="remember" checked={remember} onChange={handleChange} size="small" />}
                 label={<Typography variant="body2">Beni hatırla</Typography>}
