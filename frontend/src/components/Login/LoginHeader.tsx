@@ -4,7 +4,7 @@ export default function LoginHeader() {
     return (
         <Box>
             <Typography className="login-heading-eyebrow">
-                FİKİR HAVUZU
+                Fikir Havuzu
             </Typography>
             <Typography className="login-heading" component="h1">
                 Giriş yap

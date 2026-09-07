@@ -1,4 +1,5 @@
 import type { Permission } from "./types/Permission";
+import type { Evaluation } from "./types/Evaluation";
 import type { Proposal } from "./types/Proposal";
 import type { User } from "./types/User";
 
@@ -210,6 +211,43 @@ export async function createProposal(data: {
   }
 
   return (await response.json()) as Proposal;
+}
+
+export async function fetchProposalEvaluations(proposalId: string): Promise<Evaluation[]> {
+  const response = await fetch(`${API_URL}/proposals/${proposalId}/evaluations`, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Değerlendirmeler alınamadı: ${response.statusText}`);
+  }
+
+  return (await response.json()) as Evaluation[];
+}
+
+export async function createEvaluation(data: {
+  userId: string;
+  proposalId: string;
+  comment: string;
+  score: number;
+  isPositive: boolean;
+}): Promise<Evaluation> {
+  const response = await fetch(`${API_URL}/evaluations`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Değerlendirme oluşturulamadı: ${response.statusText}`);
+  }
+
+  return (await response.json()) as Evaluation;
 }
 
 // Fetch user by ID function

@@ -14,7 +14,7 @@ namespace api.Dtos.Evaluation
         [StringLength(4000, ErrorMessage = "Comment cannot exceed 4000 characters.")]
         public string? Comment { get; set; } // Değerlendirme yorumu (isteğe bağlı)
 
-        [Range(0, 5, ErrorMessage = "Score must be between 0 and 5.")]
+        [Range(0, 10, ErrorMessage = "Score must be between 0 and 10.")]
         public int Score { get; set; } // Değerlendirme puanı
 
         [Required]

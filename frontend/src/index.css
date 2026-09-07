@@ -121,9 +121,7 @@ body {
   color: white;
   background: var(--accent);
   border-radius: 12px 12px 12px 3px;
-  font-family: var(--heading);
-  font-size: 23px;
-  font-weight: 700;
+  font-size: 21px;
 }
 
 .landing-brand-name {
@@ -195,7 +193,7 @@ body {
   font-size: 1.8rem !important;
 }
 
-.workspace-divider { margin: 32px 0 !important; }
+.workspace-divider { margin: 16px 0 !important; }
 
 .workspace-options {
   margin-bottom: 24px;
@@ -254,13 +252,20 @@ body {
 }
 
 .detail-meta-label { margin-bottom: 4px !important; }
-.detail-divider { margin: 40px 0 !important; border-color: var(--border) !important; }
+.detail-divider { margin: 16px 0 !important; border-color: var(--border) !important; }
 .detail-content { display: flex; flex-direction: column; gap: 32px; }
 .detail-purpose-section { min-width: 0; }
 .detail-explanation-section { width: 100%; }
 .detail-section-label { margin-bottom: 8px !important; color: var(--text); font-size: 0.75rem !important; font-weight: 800 !important; letter-spacing: 0.12em; text-transform: uppercase; }
 .detail-explanation { width: 100%; padding: 20px 0; }
 .detail-explanation-text { width: 100%; color: var(--text); line-height: 1.75 !important; text-align: justify; white-space: pre-wrap; }
+.evaluation-section { display: flex; flex-direction: column; gap: 20px; }
+.evaluation-list { display: flex; flex-direction: column; gap: 16px; }
+.evaluation-item { padding: 16px 20px; border-left: 3px solid var(--color-proposal-teal); background: var(--color-surface); }
+.evaluation-result { color: var(--text-h); font-weight: 700 !important; }
+.evaluation-comment { margin-top: 8px !important; color: var(--text); line-height: 1.65 !important; white-space: pre-wrap; }
+.evaluation-form { width: 100%; padding-top: 20px; border-top: 1px solid var(--border); }
+.evaluation-rating-field { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
 .form-stack { display: grid; gap: 16px; width: 100%; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
