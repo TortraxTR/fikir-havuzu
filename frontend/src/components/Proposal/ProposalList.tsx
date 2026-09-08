@@ -5,6 +5,21 @@ import type { Proposal } from "../../types/Proposal";
 import { fetchAllProposals } from "../../api";
 import ProposalDetail from './ProposalDetail';
 
+function getCurrentUserId(): string | null {
+    const savedUser = localStorage.getItem('user');
+
+    if (!savedUser) {
+        return null;
+    }
+
+    try {
+        const user = JSON.parse(savedUser) as { id?: unknown };
+        return typeof user.id === 'string' ? user.id : null;
+    } catch {
+        return null;
+    }
+}
+
 function getProposalDate(proposal: Proposal): string {
     const date = new Date(proposal.createdAt);
 
@@ -33,7 +48,14 @@ export default function ProposalList() {
     useEffect(() => {
         let isMounted = true;
 
-        fetchAllProposals()
+        const userId = getCurrentUserId();
+        if (!userId) {
+            setError('Oturum bilgisi bulunamadı.');
+            setLoading(false);
+            return;
+        }
+
+        fetchAllProposals(userId)
             .then((fetchedProposals) => {
                 if (isMounted) {
                     setProposals(fetchedProposals);

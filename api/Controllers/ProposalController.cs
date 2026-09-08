@@ -33,8 +33,20 @@ namespace api.Controllers
 
         // GET: api/proposals
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProposalDto>>> GetProposals()
+        public async Task<ActionResult<IEnumerable<ProposalDto>>> GetProposals([FromQuery] Guid userId)
         {
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return Unauthorized("Geçerli bir kullanıcı gereklidir.");
+            }
+
+            var permissions = await _userRepository.GetUserPermissionsAsync(user.Id);
+            if (!user.IsActive || !permissions.Any(permission => permission.Code == "EVALUATION_CREATE"))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Teklifleri listeleme yetkisi gereklidir.");
+            }
+
             var proposals = await _proposalRepository.GetAllProposalsAsync();
             return Ok(proposals.Select(proposal => proposal.ToProposalDto()));
         }

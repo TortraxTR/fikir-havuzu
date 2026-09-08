@@ -176,8 +176,8 @@ export async function removePermissionFromUser(userId: string, permissionId: str
 
 // Fetch all proposals function
 
-export async function fetchAllProposals(): Promise<Proposal[]> {
-  const response = await fetch(`${API_URL}/proposals`, {
+export async function fetchAllProposals(userId: string): Promise<Proposal[]> {
+  const response = await fetch(`${API_URL}/proposals?userId=${encodeURIComponent(userId)}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });

@@ -146,7 +146,7 @@ export default function LandingPage() {
 
                     {!permissionsLoading && !permissionsError && (
                         <>
-                    {tabs.length > 0 && <LandingWorkspace tabs={tabs} selectedTab={selectedTab} onTabChange={setSelectedTab} />}
+                    {tabs.length > 0 && <LandingWorkspace tabs={tabs} selectedTab={selectedTab} onTabChange={setSelectedTab} permissions={permissions} />}
 
                     {tabs.length === 0 && (
                         <Box className="landing-tab-panel">

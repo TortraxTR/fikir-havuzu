@@ -26,6 +26,7 @@ type LandingWorkspaceProps = {
     tabs: LandingTab[];
     selectedTab: number;
     onTabChange: (tab: number) => void;
+    permissions: string[];
 };
 
 const PERMISSIONS = {
@@ -35,7 +36,7 @@ const PERMISSIONS = {
     evaluationCreate: 'EVALUATION_CREATE',
 } as const;
 
-function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
+function getWorkspaceOptions(tab: LandingTab, permissions: string[]): WorkspaceOption[] {
     if (tab.permission === PERMISSIONS.userManagement) {
         return [
             { label: 'Kullanıcıları listele', content: UserList },
@@ -46,10 +47,14 @@ function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
     }
 
     if (tab.permission === PERMISSIONS.proposalCreate) {
-        return [
-            { label: 'Yeni fikir/öneri oluştur', content: ProposalCreate },
-            { label: 'Fikirleri/Önerileri listele', content: ProposalList },
-        ];
+        const options: WorkspaceOption[] = [];
+        if (permissions.includes(PERMISSIONS.proposalCreate)) {
+            options.push({ label: 'Yeni fikir/öneri oluştur', content: ProposalCreate });
+        }
+        if (permissions.includes(PERMISSIONS.evaluationCreate)) {
+            options.push({ label: 'Fikirleri/Önerileri listele', content: ProposalList });
+        }
+        return options;
     }
 
     if (tab.permission === PERMISSIONS.permissionManagement) {
@@ -62,10 +67,10 @@ function getWorkspaceOptions(tab: LandingTab): WorkspaceOption[] {
     return [{ label: 'Genel bakış' }];
 }
 
-export default function LandingWorkspace({ tabs, selectedTab, onTabChange }: LandingWorkspaceProps) {
+export default function LandingWorkspace({ tabs, selectedTab, onTabChange, permissions }: LandingWorkspaceProps) {
     const tab = tabs[selectedTab];
     const Icon = tab.icon;
-    const options = getWorkspaceOptions(tab);
+    const options = getWorkspaceOptions(tab, permissions);
     const [selectedOption, setSelectedOption] = useState(0);
     const option = options[selectedOption];
     const OptionContent = option.content;
