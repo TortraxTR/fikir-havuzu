@@ -26,6 +26,7 @@ namespace api.Repositories
         public async Task<IEnumerable<Proposal>> GetProposalsByUserIdAsync(Guid userId)
         {
             return await _context.Proposals
+                .Include(p => p.User)
                 .Where(p => p.UserId == userId)
                 .ToListAsync();
         }

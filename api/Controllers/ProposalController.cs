@@ -42,12 +42,16 @@ namespace api.Controllers
             }
 
             var permissions = await _userRepository.GetUserPermissionsAsync(user.Id);
-            if (!user.IsActive || !permissions.Any(permission => permission.Code == "EVALUATION_CREATE"))
+            if (!user.IsActive)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, "Teklifleri listeleme yetkisi gereklidir.");
+                return StatusCode(StatusCodes.Status403Forbidden, "Aktif bir kullanıcı gereklidir.");
             }
 
-            var proposals = await _proposalRepository.GetAllProposalsAsync();
+            var canViewAllProposals = permissions.Any(permission => permission.Code == "EVALUATION_CREATE");
+            var proposals = canViewAllProposals
+                ? await _proposalRepository.GetAllProposalsAsync()
+                : await _proposalRepository.GetProposalsByUserIdAsync(user.Id);
+
             return Ok(proposals.Select(proposal => proposal.ToProposalDto()));
         }
 

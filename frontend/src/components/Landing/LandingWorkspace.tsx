@@ -51,7 +51,10 @@ function getWorkspaceOptions(tab: LandingTab, permissions: string[]): WorkspaceO
         if (permissions.includes(PERMISSIONS.proposalCreate)) {
             options.push({ label: 'Yeni fikir/öneri oluştur', content: ProposalCreate });
         }
-        if (permissions.includes(PERMISSIONS.evaluationCreate)) {
+        if (
+            permissions.includes(PERMISSIONS.proposalCreate) ||
+            permissions.includes(PERMISSIONS.evaluationCreate)
+        ) {
             options.push({ label: 'Fikirleri/Önerileri listele', content: ProposalList });
         }
         return options;
