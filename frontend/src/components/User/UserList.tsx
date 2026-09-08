@@ -63,6 +63,7 @@ export default function UserList() {
                 <TableHead>
                     <TableRow>
                         <TableCell>Ad Soyad</TableCell>
+                        <TableCell>E-posta</TableCell>
                         <TableCell>Telefon</TableCell>
                         <TableCell className="mobile-hidden-sm">Sicil No.</TableCell>
                         <TableCell className="mobile-hidden-md">T.C. Kimlik No.</TableCell>
@@ -73,6 +74,7 @@ export default function UserList() {
                     {users.map((user) => (
                         <TableRow key={user.id} hover>
                             <TableCell>{user.name} {user.surname}</TableCell>
+                            <TableCell>{user.email}</TableCell>
                             <TableCell>{user.phone}</TableCell>
                             <TableCell className="mobile-hidden-sm">{user.registrationNo}</TableCell>
                             <TableCell className="mobile-hidden-md">{user.governmentId}</TableCell>

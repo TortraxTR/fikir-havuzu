@@ -13,6 +13,11 @@ namespace api.Dtos.User
         public string Surname { get; set; } = null!; // Soyadı
 
         [Required]
+        [EmailAddress]
+        [StringLength(254, ErrorMessage = "Email cannot exceed 254 characters.")]
+        public string Email { get; set; } = null!; // E-posta
+
+        [Required]
         [Phone]
         [StringLength(15, ErrorMessage = "Phone cannot exceed 15 characters.")]
         public string Phone { get; set; } = null!; // Telefon Numarası

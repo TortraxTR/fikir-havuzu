@@ -132,6 +132,8 @@ public partial class FikirHavuzuContext : DbContext
 
             entity.HasIndex(e => e.RegistrationNo, "Kullanıcı_sicilNo_key").IsUnique();
 
+            entity.HasIndex(e => e.Email, "Kullanıcı_email_key").IsUnique();
+
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("id");
@@ -143,6 +145,9 @@ public partial class FikirHavuzuContext : DbContext
                 .HasColumnName("is_active");
             entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
+            entity.Property(e => e.Email)
+                .HasMaxLength(254)
+                .HasColumnName("email");
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
                 .HasColumnName("phone");

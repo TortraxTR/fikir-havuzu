@@ -50,6 +50,7 @@ export async function updateUser(user: User): Promise<User> {
     body: JSON.stringify({
       name: user.name,
       surname: user.surname,
+      email: user.email,
       phone: user.phone,
       registrationNo: user.registrationNo,
       governmentId: user.governmentId,
@@ -70,6 +71,7 @@ export async function updateUser(user: User): Promise<User> {
 export async function createUser(data: {
   name: string;
   surname: string;
+  email: string;
   phone: string;
   registrationNo: string;
   governmentId: string;

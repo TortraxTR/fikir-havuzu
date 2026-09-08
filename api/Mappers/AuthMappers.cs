@@ -12,6 +12,7 @@ public static class AuthMapper
             Id = user.Id,
             Name = user.Name,
             Surname = user.Surname,
+            Email = user.Email,
             Phone = user.Phone,
             IsActive = user.IsActive,
             Permissions = user.Permissions

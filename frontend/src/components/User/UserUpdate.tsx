@@ -6,6 +6,7 @@ import type { User } from '../../types/User';
 interface FormData {
     name: string;
     surname: string;
+    email: string;
     phone: string;
     registrationNo: string;
     governmentId: string;
@@ -14,6 +15,7 @@ interface FormData {
 interface FormErrors {
     name?: string;
     surname?: string;
+    email?: string;
     phone?: string;
     registrationNo?: string;
     governmentId?: string;
@@ -22,6 +24,7 @@ interface FormErrors {
 const emptyForm = (user: User): FormData => ({
     name: user.name,
     surname: user.surname,
+    email: user.email,
     phone: user.phone,
     registrationNo: user.registrationNo,
     governmentId: user.governmentId,
@@ -116,6 +119,14 @@ export default function UserUpdate() {
             errors.surname = 'Soyad 100 karakteri geçemez';
         }
 
+        if (!formData.email.trim()) {
+            errors.email = 'E-posta gerekli';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            errors.email = 'Geçerli bir e-posta adresi girin';
+        } else if (formData.email.length > 254) {
+            errors.email = 'E-posta 254 karakteri geçemez';
+        }
+
         if (!formData.phone.trim()) {
             errors.phone = 'Telefon gerekli';
         } else if (!/^[0-9+\-\s()]+$/.test(formData.phone)) {
@@ -156,6 +167,7 @@ export default function UserUpdate() {
                 ...selectedUser,
                 name: formData.name,
                 surname: formData.surname,
+                email: formData.email,
                 phone: formData.phone,
                 registrationNo: formData.registrationNo,
                 governmentId: formData.governmentId,
@@ -223,6 +235,19 @@ export default function UserUpdate() {
                             fullWidth
                         />
                     </Box>
+
+                    <TextField
+                        name="email"
+                        label="E-posta"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleFieldChange}
+                        disabled={submitting}
+                        error={!!validationErrors.email}
+                        helperText={validationErrors.email}
+                        required
+                        fullWidth
+                    />
 
                     <Box className="form-grid">
                         <TextField

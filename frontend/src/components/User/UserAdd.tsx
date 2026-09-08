@@ -5,6 +5,7 @@ import { createUser } from '../../api';
 interface FormData {
   name: string;
   surname: string;
+  email: string;
   phone: string;
   registrationNo: string;
   governmentId: string;
@@ -16,6 +17,7 @@ interface FormData {
 interface FormErrors {
   name?: string;
   surname?: string;
+  email?: string;
   phone?: string;
   registrationNo?: string;
   governmentId?: string;
@@ -27,6 +29,7 @@ export default function UserAdd() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     surname: '',
+    email: '',
     phone: '',
     registrationNo: '',
     governmentId: '',
@@ -47,6 +50,10 @@ export default function UserAdd() {
 
     if (!formData.surname.trim()) newErrors.surname = 'Soyad gerekli';
     if (formData.surname.length > 100) newErrors.surname = 'Soyad 100 karakteri geçemez';
+
+    if (!formData.email.trim()) newErrors.email = 'E-posta gerekli';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Geçerli bir e-posta adresi girin';
+    if (formData.email.length > 254) newErrors.email = 'E-posta 254 karakteri geçemez';
 
     if (!formData.phone.trim()) newErrors.phone = 'Telefon gerekli';
     if (!/^[0-9+\-\s()]+$/.test(formData.phone)) newErrors.phone = 'Geçerli bir telefon numarası girin';
@@ -100,6 +107,7 @@ export default function UserAdd() {
       const newUser = await createUser({
         name: formData.name,
         surname: formData.surname,
+        email: formData.email,
         phone: formData.phone,
         registrationNo: formData.registrationNo,
         governmentId: formData.governmentId,
@@ -111,6 +119,7 @@ export default function UserAdd() {
       setFormData({
         name: '',
         surname: '',
+        email: '',
         phone: '',
         registrationNo: '',
         governmentId: '',
@@ -153,6 +162,19 @@ export default function UserAdd() {
           fullWidth
         />
       </Box>
+
+      <TextField
+        name="email"
+        label="E-posta"
+        type="email"
+        value={formData.email}
+        onChange={handleChange}
+        disabled={submitting}
+        error={!!errors.email}
+        helperText={errors.email}
+        required
+        fullWidth
+      />
 
       <Box className="form-grid">
         <TextField

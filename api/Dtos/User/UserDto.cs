@@ -8,6 +8,8 @@ namespace api.Dtos.User
 
         public string Surname { get; set; } = null!; // Soyadı
 
+        public string Email { get; set; } = null!; // E-posta
+
         public string Phone { get; set; } = null!; // Telefon Numarası
 
         public string RegistrationNo { get; set; } = null!; //Sicil No.

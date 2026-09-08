@@ -9,6 +9,7 @@ namespace api.Mappers.UserMappers
                 Id = user.Id,
                 Name = user.Name,
                 Surname = user.Surname,
+                Email = user.Email,
                 Phone = user.Phone,
                 RegistrationNo = user.RegistrationNo,
                 GovernmentId = user.GovernmentId,
@@ -22,6 +23,7 @@ namespace api.Mappers.UserMappers
             {
                 Name = userDto.Name,
                 Surname = userDto.Surname,
+                Email = userDto.Email,
                 Phone = userDto.Phone,
                 RegistrationNo = userDto.RegistrationNo,
                 GovernmentId = userDto.GovernmentId,

@@ -49,6 +49,7 @@ namespace api.Repositories
 
             existingUser.Name = userDto.Name;
             existingUser.Surname = userDto.Surname;
+            existingUser.Email = userDto.Email;
             existingUser.Phone = userDto.Phone;
             existingUser.RegistrationNo = userDto.RegistrationNo;
             existingUser.GovernmentId = userDto.GovernmentId;

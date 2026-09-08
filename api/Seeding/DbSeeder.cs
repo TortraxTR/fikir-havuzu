@@ -27,18 +27,18 @@ public static class DbSeeder
 
         var users = new[]
         {
-            CreateUser("Efe", "Yılmaz", "5551112233", "REG-1001", "12345678901", true, permissions[0], permissions[1], permissions[2], permissions[3]),
-            CreateUser("Can", "Kaya", "5552223344", "REG-1002", "12345678902", true, permissions[1], permissions[2]),
-            CreateUser("Ece", "Demir", "5553334455", "REG-1003", "12345678903", true, permissions[2]),
-            CreateUser("Deniz", "Arslan", "5554445566", "REG-1004", "12345678904", true, permissions[3], permissions[1]),
-            CreateUser("Selin", "Aydın", "5555556677", "REG-1005", "12345678905", true, permissions[2]),
-            CreateUser("Mert", "Koç", "5556667788", "REG-1006", "12345678906", true, permissions[2]),
-            CreateUser("Derya", "Çelik", "5557778899", "REG-1007", "12345678907", true, permissions[1]),
-            CreateUser("Bora", "Şahin", "5558889900", "REG-1008", "12345678908", false, permissions[2]),
-            CreateUser("İrem", "Eren", "5559990011", "REG-1009", "12345678909", true, permissions[2]),
-            CreateUser("Kerem", "Aksoy", "5560001122", "REG-1010", "12345678910", true, permissions[1], permissions[2]),
-            CreateUser("Nehir", "Bulut", "5561112233", "REG-1011", "12345678911", true, permissions[2]),
-            CreateUser("Ozan", "Güneş", "5562223344", "REG-1012", "12345678912", true, permissions[3], permissions[2])
+            CreateUser("Efe", "Yılmaz", "efe.yilmaz@example.com", "5551112233", "REG-1001", "12345678901", true, permissions[0], permissions[1], permissions[2], permissions[3]),
+            CreateUser("Can", "Kaya", "can.kaya@example.com", "5552223344", "REG-1002", "12345678902", true, permissions[1], permissions[2]),
+            CreateUser("Ece", "Demir", "ece.demir@example.com", "5553334455", "REG-1003", "12345678903", true, permissions[2]),
+            CreateUser("Deniz", "Arslan", "deniz.arslan@example.com", "5554445566", "REG-1004", "12345678904", true, permissions[3], permissions[1]),
+            CreateUser("Selin", "Aydın", "selin.aydin@example.com", "5555556677", "REG-1005", "12345678905", true, permissions[2]),
+            CreateUser("Mert", "Koç", "mert.koc@example.com", "5556667788", "REG-1006", "12345678906", true, permissions[2]),
+            CreateUser("Derya", "Çelik", "derya.celik@example.com", "5557778899", "REG-1007", "12345678907", true, permissions[1]),
+            CreateUser("Bora", "Şahin", "bora.sahin@example.com", "5558889900", "REG-1008", "12345678908", false, permissions[2]),
+            CreateUser("İrem", "Eren", "irem.eren@example.com", "5559990011", "REG-1009", "12345678909", true, permissions[2]),
+            CreateUser("Kerem", "Aksoy", "kerem.aksoy@example.com", "5560001122", "REG-1010", "12345678910", true, permissions[1], permissions[2]),
+            CreateUser("Nehir", "Bulut", "nehir.bulut@example.com", "5561112233", "REG-1011", "12345678911", true, permissions[2]),
+            CreateUser("Ozan", "Güneş", "ozan.gunes@example.com", "5562223344", "REG-1012", "12345678912", true, permissions[3], permissions[2])
         };
 
         var proposals = new[]
@@ -82,13 +82,14 @@ public static class DbSeeder
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    private static User CreateUser(string name, string surname, string phone, string registrationNo, string governmentId, bool isActive, params Permission[] permissions)
+    private static User CreateUser(string name, string surname, string email, string phone, string registrationNo, string governmentId, bool isActive, params Permission[] permissions)
     {
         var user = new User
         {
             Id = Guid.NewGuid(),
             Name = name,
             Surname = surname,
+            Email = email,
             Phone = phone,
             RegistrationNo = registrationNo,
             GovernmentId = governmentId,
