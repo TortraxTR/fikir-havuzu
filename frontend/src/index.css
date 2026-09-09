@@ -237,12 +237,12 @@ body {
 .detail-header { margin-bottom: 32px; }
 .detail-eyebrow { margin-bottom: 12px !important; color: var(--color-proposal-teal); font-size: 0.75rem !important; font-weight: 800 !important; letter-spacing: 0.16em; text-transform: uppercase; }
 .detail-title { margin-bottom: 16px !important; color: var(--text-h); font-family: var(--heading) !important; font-size: 3.25rem !important; line-height: 1.08 !important; }
-.detail-topic { color: var(--color-proposal-teal); font-size: 1.05rem; font-weight: 700; }
-.detail-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding: 20px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.detail-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; padding: 20px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .detail-meta-item { min-width: 0; }
 .detail-meta-label { margin-bottom: 4px !important; color: var(--text); font-size: 0.75rem !important; font-weight: 800 !important; letter-spacing: 0.12em; text-transform: uppercase; }
 .detail-author,
 .detail-date,
+.detail-topic-value,
 .detail-purpose {
   color: var(--text) !important;
   font-size: 0.9rem !important;
