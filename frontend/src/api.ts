@@ -5,6 +5,29 @@ import type { User } from "./types/User";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+/**
+ * Id of the signed-in user, sent to the API as `callerId` so the server can
+ * enforce permissions. Interim mechanism until real authentication (tokens).
+ */
+export function getCallerId(): string {
+  const savedUser = localStorage.getItem('user');
+  if (!savedUser) {
+    return '';
+  }
+
+  try {
+    const user = JSON.parse(savedUser) as { id?: unknown };
+    return typeof user.id === 'string' ? user.id : '';
+  } catch {
+    return '';
+  }
+}
+
+function withCaller(path: string): string {
+  const separator = path.includes('?') ? '&' : '?';
+  return `${API_URL}${path}${separator}callerId=${encodeURIComponent(getCallerId())}`;
+}
+
 // Login function to authenticate user
 export async function login(phoneNumber: string, password: string) {
   const response = await fetch(`${API_URL}/auth/login`, {
@@ -26,7 +49,7 @@ export async function login(phoneNumber: string, password: string) {
 }
 
 export async function fetchAllUsers(): Promise<User[]> {
-  const response = await fetch(`${API_URL}/users`, {
+  const response = await fetch(withCaller('/users'), {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
@@ -41,7 +64,7 @@ export async function fetchAllUsers(): Promise<User[]> {
 // Update user function to update user details
 
 export async function updateUser(user: User): Promise<User> {
-  const response = await fetch(`${API_URL}/users/${user.id}`, {
+  const response = await fetch(withCaller(`/users/${user.id}`), {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
@@ -78,7 +101,7 @@ export async function createUser(data: {
   password: string;
   isActive: boolean;
 }): Promise<User> {
-  const response = await fetch(`${API_URL}/users`, {
+  const response = await fetch(withCaller('/users'), {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -96,7 +119,7 @@ export async function createUser(data: {
 }
 
 export async function setUserActive(userId: string, isActive: boolean): Promise<User> {
-  const response = await fetch(`${API_URL}/users/${userId}/setActive`, {
+  const response = await fetch(withCaller(`/users/${userId}/setActive`), {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
@@ -115,7 +138,7 @@ export async function setUserActive(userId: string, isActive: boolean): Promise<
 
 // Fetch user permissions function
 export async function fetchUserPermissions(id: string): Promise<Permission[]> {
-  const response = await fetch(`${API_URL}/users/${id}/permissions`, {
+  const response = await fetch(withCaller(`/users/${id}/permissions`), {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
@@ -133,7 +156,7 @@ export async function fetchUserPermissions(id: string): Promise<Permission[]> {
 }
 
 export async function fetchAllPermissions(): Promise<Permission[]> {
-  const response = await fetch(`${API_URL}/permissions`, {
+  const response = await fetch(withCaller('/permissions'), {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
@@ -147,7 +170,7 @@ export async function fetchAllPermissions(): Promise<Permission[]> {
 // Add permission to user function
 
 export async function addPermissionToUser(userId: string, permissionId: string): Promise<void> {
-  const response = await fetch(`${API_URL}/users/${userId}/permissions`, {
+  const response = await fetch(withCaller(`/users/${userId}/permissions`), {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -165,7 +188,7 @@ export async function addPermissionToUser(userId: string, permissionId: string):
 // Remove permission from user function
 
 export async function removePermissionFromUser(userId: string, permissionId: string): Promise<void> {
-  const response = await fetch(`${API_URL}/users/${userId}/permissions/${permissionId}`, {
+  const response = await fetch(withCaller(`/users/${userId}/permissions/${permissionId}`), {
     method: 'DELETE',
     headers: { Accept: 'application/json' },
   });
@@ -216,7 +239,7 @@ export async function createProposal(data: {
 }
 
 export async function fetchProposalEvaluations(proposalId: string): Promise<Evaluation[]> {
-  const response = await fetch(`${API_URL}/proposals/${proposalId}/evaluations`, {
+  const response = await fetch(withCaller(`/proposals/${proposalId}/evaluations`), {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
@@ -255,7 +278,7 @@ export async function createEvaluation(data: {
 // Fetch user by ID function
 
 export async function fetchUserById(userId: string): Promise<User> {
-  const response = await fetch(`${API_URL}/users/${userId}`, {
+  const response = await fetch(withCaller(`/users/${userId}`), {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });

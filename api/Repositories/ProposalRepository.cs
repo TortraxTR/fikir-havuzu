@@ -20,7 +20,9 @@ namespace api.Repositories
 
         public async Task<Proposal?> GetProposalByIdAsync(Guid id)
         {
-            return await _context.Proposals.FindAsync(id);
+            return await _context.Proposals
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<IEnumerable<Proposal>> GetProposalsByUserIdAsync(Guid userId)

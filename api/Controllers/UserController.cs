@@ -1,3 +1,4 @@
+using api.Authorization;
 using api.Interfaces;
 using api.Dtos.User;
 using api.Dtos.Permission;
@@ -13,25 +14,42 @@ namespace api.Controllers
     public class UserController : ControllerBase
 {
     private readonly IUserRepository _user_repo;
-    public UserController(IUserRepository userRepository)
+    private readonly IPermissionGuard _guard;
+
+    public UserController(IUserRepository userRepository, IPermissionGuard guard)
     {
         _user_repo = userRepository;
-
+        _guard = guard;
     }
-    
+
     // GET: api/users
     [HttpGet]
-    
-    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers([FromQuery] Guid callerId)
     {
+        var authorization = await _guard.RequireAsync(callerId, Permissions.BackOfficeRead);
+        if (!authorization.Ok)
+        {
+            return authorization.ToActionResult();
+        }
+
         var users = await _user_repo.GetAllUsersAsync();
         var usersDto = users.Select(u => u.ToUserDto());
         return Ok(usersDto);
     }
+
     // GET: api/users/{id}
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto>> GetUser([FromRoute] Guid id)
+    public async Task<ActionResult<UserDto>> GetUser([FromRoute] Guid id, [FromQuery] Guid callerId)
     {
+        if (callerId != id)
+        {
+            var authorization = await _guard.RequireAsync(callerId, Permissions.BackOfficeRead);
+            if (!authorization.Ok)
+            {
+                return authorization.ToActionResult();
+            }
+        }
+
         var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
         {
@@ -39,12 +57,22 @@ namespace api.Controllers
         }
         return Ok(user.ToUserDto());
     }
-    
+
     // GET: api/users/{id}/permissions
     [HttpGet("{id}/permissions")]
-
-    public async Task<ActionResult<IEnumerable<PermissionDto>>> GetUserPermissions([FromRoute] Guid id)
+    public async Task<ActionResult<IEnumerable<PermissionDto>>> GetUserPermissions([FromRoute] Guid id, [FromQuery] Guid callerId)
     {
+        // A user may always read their own permissions (the landing page needs this);
+        // reading someone else's requires a back-office permission.
+        if (callerId != id)
+        {
+            var authorization = await _guard.RequireAsync(callerId, Permissions.BackOfficeRead);
+            if (!authorization.Ok)
+            {
+                return authorization.ToActionResult();
+            }
+        }
+
         var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
         {
@@ -58,8 +86,14 @@ namespace api.Controllers
 
     // POST: api/users
     [HttpPost]
-    public async Task<ActionResult<UserDto>> CreateUser([FromBody] Dtos.User.CreateUserRequestDto userDto)
+    public async Task<ActionResult<UserDto>> CreateUser([FromQuery] Guid callerId, [FromBody] Dtos.User.CreateUserRequestDto userDto)
     {
+        var authorization = await _guard.RequireAsync(callerId, Permissions.UserManagement);
+        if (!authorization.Ok)
+        {
+            return authorization.ToActionResult();
+        }
+
         var user = userDto.ToUser();
 
         await _user_repo.CreateUserAsync(user);
@@ -69,8 +103,14 @@ namespace api.Controllers
 
     // POST: api/users/{id}/permissions
     [HttpPost("{id}/permissions")]
-    public async Task<ActionResult> AddPermissionToUser([FromRoute] Guid id, [FromBody] Dtos.Permission.AddPermissionToUserRequestDto requestDto)
+    public async Task<ActionResult> AddPermissionToUser([FromRoute] Guid id, [FromQuery] Guid callerId, [FromBody] Dtos.Permission.AddPermissionToUserRequestDto requestDto)
     {
+        var authorization = await _guard.RequireAsync(callerId, Permissions.PermissionManagement);
+        if (!authorization.Ok)
+        {
+            return authorization.ToActionResult();
+        }
+
         var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
         {
@@ -88,9 +128,14 @@ namespace api.Controllers
 
     // UPDATE: api/users/{id}
     [HttpPut("{id}")]
-
-    public async Task<ActionResult<UserDto>> UpdateUser([FromRoute] Guid id, [FromBody] Dtos.User.UpdateUserRequestDto userDto)
+    public async Task<ActionResult<UserDto>> UpdateUser([FromRoute] Guid id, [FromQuery] Guid callerId, [FromBody] Dtos.User.UpdateUserRequestDto userDto)
     {
+        var authorization = await _guard.RequireAsync(callerId, Permissions.UserManagement);
+        if (!authorization.Ok)
+        {
+            return authorization.ToActionResult();
+        }
+
         var updatedUser = await _user_repo.UpdateUserAsync(id, userDto);
         if (updatedUser == null)
         {
@@ -102,8 +147,14 @@ namespace api.Controllers
 
     // UPDATE: api/users/{id}/setActive
     [HttpPut("{id}/setActive")]
-    public async Task<ActionResult<UserDto>> SetUserActive([FromRoute] Guid id, [FromBody] Dtos.User.SetUserActiveRequestDto requestDto)
+    public async Task<ActionResult<UserDto>> SetUserActive([FromRoute] Guid id, [FromQuery] Guid callerId, [FromBody] Dtos.User.SetUserActiveRequestDto requestDto)
     {
+        var authorization = await _guard.RequireAsync(callerId, Permissions.UserManagement);
+        if (!authorization.Ok)
+        {
+            return authorization.ToActionResult();
+        }
+
         var updatedUser = await _user_repo.SetUserActiveAsync(id, requestDto.IsActive);
         if (updatedUser == null)
         {
@@ -116,8 +167,14 @@ namespace api.Controllers
 
     // DELETE: api/users/{id}
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteUser([FromRoute] Guid id)
+    public async Task<ActionResult> DeleteUser([FromRoute] Guid id, [FromQuery] Guid callerId)
     {
+        var authorization = await _guard.RequireAsync(callerId, Permissions.UserManagement);
+        if (!authorization.Ok)
+        {
+            return authorization.ToActionResult();
+        }
+
         var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
         {
@@ -131,8 +188,14 @@ namespace api.Controllers
 
     // DELETE: api/users/{id}/permissions/{permissionId}
     [HttpDelete("{id}/permissions/{permissionId}")]
-    public async Task<ActionResult> RemovePermissionFromUser([FromRoute] Guid id, [FromRoute] Guid permissionId)
+    public async Task<ActionResult> RemovePermissionFromUser([FromRoute] Guid id, [FromRoute] Guid permissionId, [FromQuery] Guid callerId)
     {
+        var authorization = await _guard.RequireAsync(callerId, Permissions.PermissionManagement);
+        if (!authorization.Ok)
+        {
+            return authorization.ToActionResult();
+        }
+
         var user = await _user_repo.GetUserByIdAsync(id);
         if (user == null)
         {

@@ -1,3 +1,4 @@
+using api.Authorization;
 using api.Interfaces;
 using api.Models;
 using api.Dtos.Evaluation;
@@ -13,29 +14,44 @@ namespace api.Controllers
         private readonly IEvaluationRepository _evaluationRepository;
         private readonly IUserRepository _userRepository;
         private readonly IProposalRepository _proposalRepository;
+        private readonly IPermissionGuard _guard;
 
         public EvaluationController(
             IEvaluationRepository evaluationRepository,
             IUserRepository userRepository,
-            IProposalRepository proposalRepository)
+            IProposalRepository proposalRepository,
+            IPermissionGuard guard)
         {
             _evaluationRepository = evaluationRepository;
             _userRepository = userRepository;
             _proposalRepository = proposalRepository;
+            _guard = guard;
         }
 
         // GET: api/evaluations
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EvaluationDto>>> GetEvaluations()
+        public async Task<ActionResult<IEnumerable<EvaluationDto>>> GetEvaluations([FromQuery] Guid callerId)
         {
+            var authorization = await _guard.RequireAsync(callerId, Permissions.EvaluationCreate);
+            if (!authorization.Ok)
+            {
+                return authorization.ToActionResult();
+            }
+
             var evaluations = await _evaluationRepository.GetAllEvaluationsAsync();
             return Ok(evaluations.Select(evaluation => evaluation.ToEvaluationDto()));
         }
 
         // GET: api/evaluations/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<EvaluationDto>> GetEvaluation([FromRoute] Guid id)
+        public async Task<ActionResult<EvaluationDto>> GetEvaluation([FromRoute] Guid id, [FromQuery] Guid callerId)
         {
+            var authorization = await _guard.RequireAsync(callerId, Permissions.EvaluationCreate);
+            if (!authorization.Ok)
+            {
+                return authorization.ToActionResult();
+            }
+
             var evaluation = await _evaluationRepository.GetEvaluationByIdAsync(id);
             if (evaluation == null)
             {
@@ -46,19 +62,12 @@ namespace api.Controllers
 
         // POST: api/evaluations
         [HttpPost]
-
         public async Task<ActionResult<EvaluationDto>> CreateEvaluation([FromBody] CreateEvaluationRequestDto evaluationDto)
         {
-            var user = await _userRepository.GetUserByIdAsync(evaluationDto.UserId);
-            if (user == null)
+            var authorization = await _guard.RequireAsync(evaluationDto.UserId, Permissions.EvaluationCreate);
+            if (!authorization.Ok)
             {
-                return BadRequest("User does not exist.");
-            }
-
-            var permissions = await _userRepository.GetUserPermissionsAsync(user.Id);
-            if (!user.IsActive || !permissions.Any(permission => permission.Code == "EVALUATION_CREATE"))
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, "Değerlendirme oluşturma yetkisi gereklidir.");
+                return authorization.ToActionResult();
             }
 
             var proposal = await _proposalRepository.GetProposalByIdAsync(evaluationDto.ProposalId);
@@ -69,17 +78,17 @@ namespace api.Controllers
 
             var evaluation = evaluationDto.ToEvaluation();
             var createdEvaluation = await _evaluationRepository.CreateEvaluationAsync(evaluation);
-            return CreatedAtAction(nameof(GetEvaluation), new { id = createdEvaluation.Id }, createdEvaluation.ToEvaluationDto());
+            return CreatedAtAction(nameof(GetEvaluation), new { id = createdEvaluation.Id, callerId = evaluationDto.UserId }, createdEvaluation.ToEvaluationDto());
         }
 
         // PUT: api/evaluations/{id}
         [HttpPut("{id}")]
         public async Task<ActionResult<EvaluationDto>> UpdateEvaluation([FromRoute] Guid id, [FromBody] UpdateEvaluationRequestDto evaluationDto)
         {
-            var user = await _userRepository.GetUserByIdAsync(evaluationDto.UserId);
-            if (user == null)
+            var authorization = await _guard.RequireAsync(evaluationDto.UserId, Permissions.EvaluationCreate);
+            if (!authorization.Ok)
             {
-                return BadRequest("User does not exist.");
+                return authorization.ToActionResult();
             }
 
             var proposal = await _proposalRepository.GetProposalByIdAsync(evaluationDto.ProposalId);
@@ -99,8 +108,14 @@ namespace api.Controllers
 
         // DELETE: api/evaluations/{id}
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteEvaluation([FromRoute] Guid id)
+        public async Task<ActionResult> DeleteEvaluation([FromRoute] Guid id, [FromQuery] Guid callerId)
         {
+            var authorization = await _guard.RequireAsync(callerId, Permissions.EvaluationCreate);
+            if (!authorization.Ok)
+            {
+                return authorization.ToActionResult();
+            }
+
             var deleted = await _evaluationRepository.DeleteEvaluationAsync(id);
             if (!deleted)
             {

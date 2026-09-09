@@ -1,4 +1,5 @@
 using api;
+using api.Authorization;
 using api.Interfaces;
 using api.Models;
 using api.Repositories;
@@ -21,6 +22,7 @@ builder.Services.AddScoped<IProposalRepository, ProposalRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>();
 builder.Services.AddScoped<IProposalFileRepository, ProposalFileRepository>();
+builder.Services.AddScoped<IPermissionGuard, PermissionGuard>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
