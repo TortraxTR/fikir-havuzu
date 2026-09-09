@@ -45,8 +45,6 @@ export default function LoginPage() {
     try {
       const user = await login(form.phoneNumber, form.password);
 
-      console.log('Logged-in user:', user);
-
       if (form.remember) {
         localStorage.setItem('user', JSON.stringify(user));
       }

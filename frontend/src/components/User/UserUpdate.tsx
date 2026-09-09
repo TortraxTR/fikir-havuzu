@@ -171,7 +171,8 @@ export default function UserUpdate() {
                 phone: formData.phone,
                 registrationNo: formData.registrationNo,
                 governmentId: formData.governmentId,
-                isActive: true,
+                // This form does not manage activation — preserve the current status.
+                isActive: selectedUser.isActive,
             });
 
             setUsers((currentUsers) => currentUsers.map((user) =>
