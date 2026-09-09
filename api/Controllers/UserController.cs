@@ -13,12 +13,12 @@ namespace api.Controllers
     [ApiController]
     public class UserController : ControllerBase
 {
-    private readonly IUserRepository _user_repo;
+    private readonly IUserRepository _userRepository;
     private readonly IPermissionGuard _guard;
 
     public UserController(IUserRepository userRepository, IPermissionGuard guard)
     {
-        _user_repo = userRepository;
+        _userRepository = userRepository;
         _guard = guard;
     }
 
@@ -32,7 +32,7 @@ namespace api.Controllers
             return authorization.ToActionResult();
         }
 
-        var users = await _user_repo.GetAllUsersAsync();
+        var users = await _userRepository.GetAllUsersAsync();
         var usersDto = users.Select(u => u.ToUserDto());
         return Ok(usersDto);
     }
@@ -50,7 +50,7 @@ namespace api.Controllers
             }
         }
 
-        var user = await _user_repo.GetUserByIdAsync(id);
+        var user = await _userRepository.GetUserByIdAsync(id);
         if (user == null)
         {
             return NotFound();
@@ -73,13 +73,13 @@ namespace api.Controllers
             }
         }
 
-        var user = await _user_repo.GetUserByIdAsync(id);
+        var user = await _userRepository.GetUserByIdAsync(id);
         if (user == null)
         {
             return NotFound();
         }
 
-        var permissions = await _user_repo.GetUserPermissionsAsync(id);
+        var permissions = await _userRepository.GetUserPermissionsAsync(id);
         var permissionsDto = permissions.Select(p => p.ToPermissionDto());
         return Ok(permissionsDto);
     }
@@ -96,7 +96,7 @@ namespace api.Controllers
 
         var user = userDto.ToUser();
 
-        await _user_repo.CreateUserAsync(user);
+        await _userRepository.CreateUserAsync(user);
 
         return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToUserDto());
     }
@@ -111,13 +111,13 @@ namespace api.Controllers
             return authorization.ToActionResult();
         }
 
-        var user = await _user_repo.GetUserByIdAsync(id);
+        var user = await _userRepository.GetUserByIdAsync(id);
         if (user == null)
         {
             return NotFound();
         }
 
-        var success = await _user_repo.AddPermissionToUserAsync(id, requestDto.PermissionId);
+        var success = await _userRepository.AddPermissionToUserAsync(id, requestDto.PermissionId);
         if (!success)
         {
             return BadRequest("Failed to add permission to user.");
@@ -136,7 +136,7 @@ namespace api.Controllers
             return authorization.ToActionResult();
         }
 
-        var updatedUser = await _user_repo.UpdateUserAsync(id, userDto);
+        var updatedUser = await _userRepository.UpdateUserAsync(id, userDto);
         if (updatedUser == null)
         {
             return NotFound();
@@ -155,7 +155,7 @@ namespace api.Controllers
             return authorization.ToActionResult();
         }
 
-        var updatedUser = await _user_repo.SetUserActiveAsync(id, requestDto.IsActive);
+        var updatedUser = await _userRepository.SetUserActiveAsync(id, requestDto.IsActive);
         if (updatedUser == null)
         {
             return NotFound();
@@ -175,13 +175,13 @@ namespace api.Controllers
             return authorization.ToActionResult();
         }
 
-        var user = await _user_repo.GetUserByIdAsync(id);
+        var user = await _userRepository.GetUserByIdAsync(id);
         if (user == null)
         {
             return NotFound();
         }
 
-        await _user_repo.DeleteUserAsync(id);
+        await _userRepository.DeleteUserAsync(id);
 
         return NoContent();
     }
@@ -196,13 +196,13 @@ namespace api.Controllers
             return authorization.ToActionResult();
         }
 
-        var user = await _user_repo.GetUserByIdAsync(id);
+        var user = await _userRepository.GetUserByIdAsync(id);
         if (user == null)
         {
             return NotFound();
         }
 
-        var success = await _user_repo.RemovePermissionFromUserAsync(id, permissionId);
+        var success = await _userRepository.RemovePermissionFromUserAsync(id, permissionId);
         if (!success)
         {
             return BadRequest("Failed to remove permission from user.");
