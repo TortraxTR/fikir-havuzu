@@ -17,20 +17,17 @@ namespace api.Controllers
     public class ProposalController : ControllerBase
     {
         private readonly IProposalRepository _proposalRepository;
-        private readonly IEvaluationRepository _evaluationRepository;
         private readonly IUserRepository _userRepository;
         private readonly IProposalFileRepository _fileRepository;
         private readonly IPermissionGuard _guard;
 
         public ProposalController(
             IProposalRepository proposalRepository,
-            IEvaluationRepository evaluationRepository,
             IUserRepository userRepository,
             IProposalFileRepository fileRepository,
             IPermissionGuard guard)
         {
             _proposalRepository = proposalRepository;
-            _evaluationRepository = evaluationRepository;
             _userRepository = userRepository;
             _fileRepository = fileRepository;
             _guard = guard;
@@ -156,36 +153,6 @@ namespace api.Controllers
                 new { id = createdFile.Id, callerId },
                 createdFile.ToProposalFileDto()
             );
-        }
-
-        // POST: api/proposals/{proposalId}/evaluations
-        [HttpPost("{proposalId}/evaluations")]
-        public async Task<ActionResult<EvaluationDto>> CreateProposalEvaluation(
-            [FromRoute] Guid proposalId,
-            [FromBody] CreateEvaluationRequestDto evaluationDto)
-        {
-            var proposal = await _proposalRepository.GetProposalByIdAsync(proposalId);
-            if (proposal == null)
-            {
-                return NotFound();
-            }
-
-            var authorization = await _guard.RequireAsync(evaluationDto.UserId, Permissions.EvaluationCreate);
-            if (!authorization.Ok)
-            {
-                return authorization.ToActionResult();
-            }
-
-            var evaluation = evaluationDto.ToEvaluation();
-            evaluation.ProposalId = proposalId;
-
-            var createdEvaluation = await _evaluationRepository.CreateEvaluationAsync(evaluation);
-
-            return CreatedAtAction(
-                nameof(EvaluationController.GetEvaluation),
-                "Evaluation",
-                new { id = createdEvaluation.Id, callerId = evaluationDto.UserId },
-                createdEvaluation.ToEvaluationDto());
         }
 
         // POST: api/proposals
