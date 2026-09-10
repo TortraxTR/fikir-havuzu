@@ -4,6 +4,7 @@ using api.Interfaces;
 using api.Models;
 using api.Repositories;
 using api.Seeding;
+using api.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +23,10 @@ builder.Services.AddScoped<IProposalRepository, ProposalRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>();
 builder.Services.AddScoped<IProposalFileRepository, ProposalFileRepository>();
+builder.Services.AddScoped<IPermissionChecker, PermissionChecker>();
 builder.Services.AddScoped<IPermissionGuard, PermissionGuard>();
+builder.Services.AddScoped<IProposalService, ProposalService>();
+builder.Services.AddScoped<IEvaluationService, EvaluationService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>

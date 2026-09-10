@@ -1,12 +1,7 @@
-using api.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Authorization
 {
-    /// <summary>
-    /// Outcome of an authorization check. When <see cref="Ok"/> is <c>false</c> the
-    /// caller returns <see cref="ToActionResult"/> immediately.
-    /// </summary>
     public sealed class AuthorizationResult
     {
         public bool Ok { get; private init; }
@@ -23,52 +18,34 @@ namespace api.Authorization
 
     public interface IPermissionGuard
     {
-        /// <summary>
-        /// Verifies that <paramref name="callerId"/> is an existing, active user who
-        /// holds at least one of <paramref name="anyOf"/>. Pass no codes to require
-        /// only a valid, active user.
-        /// </summary>
         Task<AuthorizationResult> RequireAsync(Guid callerId, params string[] anyOf);
     }
 
+    // Controller-facing adapter over IPermissionChecker; new service-layer code should
+    // depend on IPermissionChecker directly.
     public sealed class PermissionGuard : IPermissionGuard
     {
-        private readonly IUserRepository _users;
+        private readonly IPermissionChecker _checker;
 
-        public PermissionGuard(IUserRepository users)
+        public PermissionGuard(IPermissionChecker checker)
         {
-            _users = users;
+            _checker = checker;
         }
 
         public async Task<AuthorizationResult> RequireAsync(Guid callerId, params string[] anyOf)
         {
-            if (callerId == Guid.Empty)
+            var access = await _checker.CheckAsync(callerId, anyOf);
+
+            return access.Status switch
             {
-                return AuthorizationResult.Fail(StatusCodes.Status401Unauthorized, "Geçerli bir kullanıcı gereklidir.");
-            }
-
-            var caller = await _users.GetUserByIdAsync(callerId);
-            if (caller == null)
-            {
-                return AuthorizationResult.Fail(StatusCodes.Status401Unauthorized, "Geçerli bir kullanıcı gereklidir.");
-            }
-
-            if (!caller.IsActive)
-            {
-                return AuthorizationResult.Fail(StatusCodes.Status403Forbidden, "Aktif bir kullanıcı gereklidir.");
-            }
-
-            if (anyOf.Length == 0)
-            {
-                return AuthorizationResult.Success;
-            }
-
-            var permissions = await _users.GetUserPermissionsAsync(callerId);
-            var held = permissions.Select(permission => permission.Code).ToHashSet();
-
-            return anyOf.Any(held.Contains)
-                ? AuthorizationResult.Success
-                : AuthorizationResult.Fail(StatusCodes.Status403Forbidden, "Bu işlem için yetkiniz yok.");
+                AccessStatus.Granted => AuthorizationResult.Success,
+                AccessStatus.NoUser => AuthorizationResult.Fail(
+                    StatusCodes.Status401Unauthorized, "Geçerli bir kullanıcı gereklidir."),
+                AccessStatus.Inactive => AuthorizationResult.Fail(
+                    StatusCodes.Status403Forbidden, "Aktif bir kullanıcı gereklidir."),
+                _ => AuthorizationResult.Fail(
+                    StatusCodes.Status403Forbidden, "Bu işlem için yetkiniz yok."),
+            };
         }
     }
 }

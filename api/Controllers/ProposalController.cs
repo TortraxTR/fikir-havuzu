@@ -1,120 +1,53 @@
-using api.Authorization;
-using api.Interfaces;
-using api.Dtos.Proposal;
+using api.Common;
 using api.Dtos.Evaluation;
+using api.Dtos.Proposal;
 using api.Dtos.ProposalFile;
-using api.Mappers.ProposalMappers;
-using api.Mappers.EvaluationMappers;
-using api.Mappers.ProposalFileMappers;
-using api.Models;
+using api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
     [Route("api/proposals")]
     [ApiController]
-
     public class ProposalController : ControllerBase
     {
-        private readonly IProposalRepository _proposalRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IProposalFileRepository _fileRepository;
-        private readonly IPermissionGuard _guard;
+        private readonly IProposalService _proposals;
 
-        public ProposalController(
-            IProposalRepository proposalRepository,
-            IUserRepository userRepository,
-            IProposalFileRepository fileRepository,
-            IPermissionGuard guard)
+        public ProposalController(IProposalService proposals)
         {
-            _proposalRepository = proposalRepository;
-            _userRepository = userRepository;
-            _fileRepository = fileRepository;
-            _guard = guard;
+            _proposals = proposals;
         }
 
         // GET: api/proposals
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProposalDto>>> GetProposals([FromQuery] Guid userId)
         {
-            var user = await _userRepository.GetUserByIdAsync(userId);
-            if (user == null)
-            {
-                return Unauthorized("Geçerli bir kullanıcı gereklidir.");
-            }
-
-            var permissions = await _userRepository.GetUserPermissionsAsync(user.Id);
-            if (!user.IsActive)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, "Aktif bir kullanıcı gereklidir.");
-            }
-
-            var canViewAllProposals = permissions.Any(permission => permission.Code == Permissions.EvaluationCreate);
-            var proposals = canViewAllProposals
-                ? await _proposalRepository.GetAllProposalsAsync()
-                : await _proposalRepository.GetProposalsByUserIdAsync(user.Id);
-
-            return Ok(proposals.Select(proposal => proposal.ToProposalDto()));
+            var result = await _proposals.GetVisibleAsync(userId);
+            return result.ToActionResult();
         }
 
         // GET: api/proposals/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<ProposalDto>> GetProposal([FromRoute] Guid id, [FromQuery] Guid callerId)
         {
-            var proposal = await _proposalRepository.GetProposalByIdAsync(id);
-            if (proposal == null)
-            {
-                return NotFound();
-            }
-
-            var access = await AuthorizeProposalViewAsync(callerId, proposal);
-            if (access != null)
-            {
-                return access;
-            }
-
-            return Ok(proposal.ToProposalDto());
+            var result = await _proposals.GetByIdAsync(id, callerId);
+            return result.ToActionResult();
         }
 
         // GET: api/proposals/{id}/evaluations
         [HttpGet("{id}/evaluations")]
         public async Task<ActionResult<IEnumerable<EvaluationDto>>> GetProposalEvaluations([FromRoute] Guid id, [FromQuery] Guid callerId)
         {
-            var proposal = await _proposalRepository.GetProposalByIdAsync(id);
-            if (proposal == null)
-            {
-                return NotFound();
-            }
-
-            var access = await AuthorizeProposalViewAsync(callerId, proposal);
-            if (access != null)
-            {
-                return access;
-            }
-
-            var evaluations = await _proposalRepository.GetProposalEvaluationsAsync(id);
-            var evaluationsDto = evaluations.Select(e => e.ToEvaluationDto());
-            return Ok(evaluationsDto);
+            var result = await _proposals.GetEvaluationsAsync(id, callerId);
+            return result.ToActionResult();
         }
 
         // GET: api/proposals/{id}/files
         [HttpGet("{id}/files")]
         public async Task<ActionResult<IEnumerable<ProposalFileDto>>> GetProposalFiles([FromRoute] Guid id, [FromQuery] Guid callerId)
         {
-            var proposal = await _proposalRepository.GetProposalByIdAsync(id);
-            if (proposal == null)
-            {
-                return NotFound();
-            }
-
-            var access = await AuthorizeProposalViewAsync(callerId, proposal);
-            if (access != null)
-            {
-                return access;
-            }
-
-            var files = await _fileRepository.GetProposalFilesByProposalIdAsync(id);
-            return Ok(files.Select(f => f.ToProposalFileDto()));
+            var result = await _proposals.GetFilesAsync(id, callerId);
+            return result.ToActionResult();
         }
 
         // POST: api/proposals/{proposalId}/files
@@ -124,123 +57,49 @@ namespace api.Controllers
             [FromQuery] Guid callerId,
             [FromBody] CreateProposalFileRequestDto fileDto)
         {
-            var proposal = await _proposalRepository.GetProposalByIdAsync(proposalId);
-            if (proposal == null)
+            var result = await _proposals.AddFileAsync(proposalId, callerId, fileDto);
+            if (!result.Ok)
             {
-                return NotFound();
+                return result.Error();
             }
-
-            // Only the proposal owner attaches documents to their own idea (spec 2.1).
-            var authorization = await _guard.RequireAsync(callerId, Permissions.ProposalCreate);
-            if (!authorization.Ok)
-            {
-                return authorization.ToActionResult();
-            }
-
-            if (proposal.UserId != callerId)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, "Yalnızca fikri oluşturan kullanıcı doküman ekleyebilir.");
-            }
-
-            var fileEntity = fileDto.ToProposalFile();
-            fileEntity.ProposalId = proposalId;
-
-            var createdFile = await _fileRepository.CreateProposalFileAsync(fileEntity);
 
             return CreatedAtAction(
                 nameof(ProposalFileController.GetProposalFileById),
                 "ProposalFile",
-                new { id = createdFile.Id, callerId },
-                createdFile.ToProposalFileDto()
-            );
+                new { id = result.Value!.Id, callerId },
+                result.Value);
         }
 
         // POST: api/proposals
         [HttpPost]
         public async Task<ActionResult<ProposalDto>> CreateProposal([FromBody] CreateProposalRequestDto proposalDto)
         {
-            var authorization = await _guard.RequireAsync(proposalDto.UserId, Permissions.ProposalCreate);
-            if (!authorization.Ok)
+            var result = await _proposals.CreateAsync(proposalDto);
+            if (!result.Ok)
             {
-                return authorization.ToActionResult();
+                return result.Error();
             }
 
-            var createdProposal = await _proposalRepository.CreateProposalAsync(proposalDto.ToProposal());
-            return CreatedAtAction(nameof(GetProposal), new { id = createdProposal.Id, callerId = proposalDto.UserId }, createdProposal.ToProposalDto());
+            return CreatedAtAction(
+                nameof(GetProposal),
+                new { id = result.Value!.Id, callerId = proposalDto.UserId },
+                result.Value);
         }
 
         // PUT: api/proposals/{id}
         [HttpPut("{id}")]
         public async Task<ActionResult<ProposalDto>> UpdateProposal(Guid id, [FromQuery] Guid callerId, [FromBody] UpdateProposalRequestDto proposalDto)
         {
-            var proposal = await _proposalRepository.GetProposalByIdAsync(id);
-            if (proposal == null)
-            {
-                return NotFound();
-            }
-
-            var authorization = await _guard.RequireAsync(callerId, Permissions.ProposalCreate);
-            if (!authorization.Ok)
-            {
-                return authorization.ToActionResult();
-            }
-
-            if (proposal.UserId != callerId)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, "Yalnızca fikri oluşturan kullanıcı düzenleyebilir.");
-            }
-
-            var updatedProposal = await _proposalRepository.UpdateProposalAsync(id, proposalDto.ToProposal());
-            if (updatedProposal == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(updatedProposal.ToProposalDto());
+            var result = await _proposals.UpdateAsync(id, callerId, proposalDto);
+            return result.ToActionResult();
         }
 
         // DELETE: api/proposals/{id}
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProposal(Guid id, [FromQuery] Guid callerId)
         {
-            var proposal = await _proposalRepository.GetProposalByIdAsync(id);
-            if (proposal == null)
-            {
-                return NotFound();
-            }
-
-            var isOwner = proposal.UserId == callerId;
-            var authorization = await _guard.RequireAsync(callerId, isOwner ? Array.Empty<string>() : new[] { Permissions.UserManagement });
-            if (!authorization.Ok)
-            {
-                return authorization.ToActionResult();
-            }
-
-            var deleted = await _proposalRepository.DeleteProposalAsync(id);
-            if (!deleted)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-
-        /// <summary>
-        /// A proposal (and its evaluations and files) may be viewed by its owner or by
-        /// any active user who can evaluate proposals. Returns <c>null</c> when allowed,
-        /// otherwise the error result to return.
-        /// </summary>
-        private async Task<ActionResult?> AuthorizeProposalViewAsync(Guid callerId, Proposal proposal)
-        {
-            if (proposal.UserId == callerId)
-            {
-                var ownerCheck = await _guard.RequireAsync(callerId);
-                return ownerCheck.Ok ? null : ownerCheck.ToActionResult();
-            }
-
-            var authorization = await _guard.RequireAsync(callerId, Permissions.EvaluationCreate);
-            return authorization.Ok ? null : authorization.ToActionResult();
+            var result = await _proposals.DeleteAsync(id, callerId);
+            return result.ToActionResult();
         }
     }
-
 }
