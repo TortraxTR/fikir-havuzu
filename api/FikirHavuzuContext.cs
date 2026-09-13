@@ -114,7 +114,13 @@ public partial class FikirHavuzuContext : DbContext
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("id");
-            entity.Property(e => e.File).HasColumnName("file");
+            entity.Property(e => e.FileName)
+                .HasMaxLength(255)
+                .HasColumnName("file_name");
+            entity.Property(e => e.ContentType)
+                .HasMaxLength(255)
+                .HasColumnName("content_type");
+            entity.Property(e => e.Content).HasColumnName("content");
             entity.Property(e => e.ProposalId).HasColumnName("proposal_id");
 
             entity.HasOne(d => d.Proposal).WithMany(p => p.ProposalFiles)

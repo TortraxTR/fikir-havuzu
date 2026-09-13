@@ -1,6 +1,7 @@
 import { Alert, Box, Button, TextField } from '@mui/material';
-import { useState, type ChangeEvent, type SubmitEvent } from 'react';
-import { createProposal } from '../../api';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import { useRef, useState, type ChangeEvent, type SubmitEvent } from 'react';
+import { createProposal, uploadProposalFile } from '../../api';
 
 type ProposalForm = {
 	title: string;
@@ -51,9 +52,15 @@ function validateForm(form: ProposalForm): ProposalFormErrors {
 export default function ProposalCreate() {
 	const [form, setForm] = useState<ProposalForm>(initialForm);
 	const [errors, setErrors] = useState<ProposalFormErrors>({});
+	const [files, setFiles] = useState<File[]>([]);
+	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [submitting, setSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
+
+	const handleFilesChange = (event: ChangeEvent<HTMLInputElement>) => {
+		setFiles(event.target.files ? Array.from(event.target.files) : []);
+	};
 
 	const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		const { name, value } = event.target;
@@ -84,9 +91,28 @@ export default function ProposalCreate() {
 		setSubmitting(true);
 
 		try {
-			await createProposal({ userId, ...form });
+			const created = await createProposal({ userId, ...form });
+
+			let uploadFailures = 0;
+			for (const file of files) {
+				try {
+					await uploadProposalFile(created.id, file);
+				} catch {
+					uploadFailures += 1;
+				}
+			}
+
 			setForm(initialForm);
-			setSuccess('Fikir/öneri başarıyla oluşturuldu.');
+			setFiles([]);
+			if (fileInputRef.current) {
+				fileInputRef.current.value = '';
+			}
+
+			setSuccess(
+				uploadFailures > 0
+					? `Fikir/öneri oluşturuldu, ancak ${uploadFailures} doküman yüklenemedi.`
+					: 'Fikir/öneri başarıyla oluşturuldu.',
+			);
 		} catch (requestError: unknown) {
 			setError(requestError instanceof Error ? requestError.message : 'Fikir/öneri oluşturulamadı.');
 		} finally {
@@ -148,6 +174,30 @@ export default function ProposalCreate() {
 				required
 				fullWidth
 			/>
+			<Box>
+				<Button
+					component="label"
+					variant="outlined"
+					startIcon={<AttachFileIcon />}
+					disabled={submitting}
+				>
+					Doküman ekle
+					<input
+						ref={fileInputRef}
+						type="file"
+						multiple
+						hidden
+						onChange={handleFilesChange}
+					/>
+				</Button>
+				{files.length > 0 && (
+					<Box component="ul" className="proposal-file-list">
+						{files.map((file, index) => (
+							<li key={`${file.name}-${index}`}>{file.name}</li>
+						))}
+					</Box>
+				)}
+			</Box>
 			<Button
 				type="submit"
 				variant="contained"

@@ -9,7 +9,11 @@ public partial class ProposalFile
 
     public Guid ProposalId { get; set; }
 
-    public string File { get; set; } = null!;
+    public string FileName { get; set; } = null!;
+
+    public string ContentType { get; set; } = null!;
+
+    public byte[] Content { get; set; } = null!;
 
     public virtual Proposal Proposal { get; set; } = null!;
 }

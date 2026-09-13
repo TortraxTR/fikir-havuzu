@@ -3,6 +3,7 @@ using api.Dtos.Evaluation;
 using api.Dtos.Proposal;
 using api.Dtos.ProposalFile;
 using api.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -52,22 +53,38 @@ namespace api.Controllers
 
         // POST: api/proposals/{proposalId}/files
         [HttpPost("{proposalId}/files")]
+        [Consumes("multipart/form-data")]
         public async Task<ActionResult<ProposalFileDto>> CreateProposalFile(
             [FromRoute] Guid proposalId,
             [FromQuery] Guid callerId,
-            [FromBody] CreateProposalFileRequestDto fileDto)
+            IFormFile file)
         {
-            var result = await _proposals.AddFileAsync(proposalId, callerId, fileDto);
+            var result = await _proposals.AddFileAsync(proposalId, callerId, file);
             if (!result.Ok)
             {
                 return result.Error();
             }
 
-            return CreatedAtAction(
-                nameof(ProposalFileController.GetProposalFileById),
-                "ProposalFile",
-                new { id = result.Value!.Id, callerId },
+            return Created(
+                $"/api/proposals/{proposalId}/files/{result.Value!.Id}/content",
                 result.Value);
+        }
+
+        // GET: api/proposals/{proposalId}/files/{fileId}/content
+        [HttpGet("{proposalId}/files/{fileId}/content")]
+        public async Task<ActionResult> DownloadProposalFile(
+            [FromRoute] Guid proposalId,
+            [FromRoute] Guid fileId,
+            [FromQuery] Guid callerId)
+        {
+            var result = await _proposals.DownloadFileAsync(proposalId, fileId, callerId);
+            if (!result.Ok)
+            {
+                return result.Error();
+            }
+
+            var file = result.Value!;
+            return File(file.Content, file.ContentType, file.FileName);
         }
 
         // POST: api/proposals

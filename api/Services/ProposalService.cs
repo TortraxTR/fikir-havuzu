@@ -8,11 +8,14 @@ using api.Mappers.EvaluationMappers;
 using api.Mappers.ProposalMappers;
 using api.Mappers.ProposalFileMappers;
 using api.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace api.Services
 {
     public sealed class ProposalService : IProposalService
     {
+        private const long MaxFileSizeBytes = 10 * 1024 * 1024; // 10 MB
+
         private readonly IProposalRepository _proposals;
         private readonly IProposalFileRepository _files;
         private readonly IPermissionChecker _permissions;
@@ -93,7 +96,7 @@ namespace api.Services
             return Result<IEnumerable<ProposalFileDto>>.Success(files.Select(file => file.ToProposalFileDto()));
         }
 
-        public async Task<Result<ProposalFileDto>> AddFileAsync(Guid proposalId, Guid callerId, CreateProposalFileRequestDto dto)
+        public async Task<Result<ProposalFileDto>> AddFileAsync(Guid proposalId, Guid callerId, IFormFile file)
         {
             var proposal = await _proposals.GetProposalByIdAsync(proposalId);
             if (proposal == null)
@@ -113,11 +116,52 @@ namespace api.Services
                 return Result<ProposalFileDto>.Fail(ResultError.Forbidden, "Yalnızca fikri oluşturan kullanıcı doküman ekleyebilir.");
             }
 
-            var entity = dto.ToProposalFile();
-            entity.ProposalId = proposalId;
+            if (file.Length == 0)
+            {
+                return Result<ProposalFileDto>.Fail(ResultError.Validation, "Dosya boş olamaz.");
+            }
+
+            if (file.Length > MaxFileSizeBytes)
+            {
+                return Result<ProposalFileDto>.Fail(ResultError.Validation, "Dosya boyutu 10 MB'ı geçemez.");
+            }
+
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+
+            var entity = new ProposalFile
+            {
+                ProposalId = proposalId,
+                FileName = file.FileName,
+                ContentType = string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType,
+                Content = stream.ToArray()
+            };
 
             var created = await _files.CreateProposalFileAsync(entity);
             return Result<ProposalFileDto>.Success(created.ToProposalFileDto());
+        }
+
+        public async Task<Result<ProposalFileContent>> DownloadFileAsync(Guid proposalId, Guid fileId, Guid callerId)
+        {
+            var proposal = await _proposals.GetProposalByIdAsync(proposalId);
+            if (proposal == null)
+            {
+                return Result<ProposalFileContent>.Fail(ResultError.NotFound);
+            }
+
+            var access = await AuthorizeViewAsync(callerId, proposal);
+            if (!access.Ok)
+            {
+                return Result<ProposalFileContent>.Fail(access);
+            }
+
+            var file = await _files.GetProposalFileByIdAsync(fileId);
+            if (file == null || file.ProposalId != proposalId)
+            {
+                return Result<ProposalFileContent>.Fail(ResultError.NotFound);
+            }
+
+            return Result<ProposalFileContent>.Success(new ProposalFileContent(file.FileName, file.ContentType, file.Content));
         }
 
         public async Task<Result<ProposalDto>> CreateAsync(CreateProposalRequestDto dto)

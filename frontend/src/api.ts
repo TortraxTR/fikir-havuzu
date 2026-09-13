@@ -1,6 +1,7 @@
 import type { Permission } from "./types/Permission";
 import type { Evaluation } from "./types/Evaluation";
 import type { Proposal } from "./types/Proposal";
+import type { ProposalFile } from "./types/ProposalFile";
 import type { User } from "./types/User";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -290,4 +291,44 @@ export async function fetchUserById(userId: string): Promise<User> {
     throw new Error(`Kullanıcı alınamadı: ${response.statusText}`);
   }
   return (await response.json()) as User;
+}
+
+// Fetch the documents attached to a proposal
+
+export async function fetchProposalFiles(proposalId: string): Promise<ProposalFile[]> {
+  const response = await fetch(withCaller(`/proposals/${proposalId}/files`), {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Dokümanlar alınamadı: ${response.statusText}`);
+  }
+
+  return (await response.json()) as ProposalFile[];
+}
+
+// Upload a document for a proposal
+
+export async function uploadProposalFile(proposalId: string, file: File): Promise<ProposalFile> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(withCaller(`/proposals/${proposalId}/files`), {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Doküman yüklenemedi: ${response.statusText}`);
+  }
+
+  return (await response.json()) as ProposalFile;
+}
+
+// URL to download/view a previously attached document
+
+export function getProposalFileDownloadUrl(proposalId: string, fileId: string): string {
+  return withCaller(`/proposals/${proposalId}/files/${fileId}/content`);
 }

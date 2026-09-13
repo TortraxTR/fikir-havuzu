@@ -1,10 +1,18 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { Alert, Box, Button, Divider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { fetchProposalEvaluations } from '../../api';
+import { fetchProposalEvaluations, fetchProposalFiles, getProposalFileDownloadUrl } from '../../api';
 import type { Proposal } from '../../types/Proposal';
 import type { Evaluation } from '../../types/Evaluation';
+import type { ProposalFile } from '../../types/ProposalFile';
 import ProposalEvaluate from './ProposalEvaluate';
+
+function formatFileSize(sizeBytes: number): string {
+	if (sizeBytes < 1024) return `${sizeBytes} B`;
+	if (sizeBytes < 1024 * 1024) return `${(sizeBytes / 1024).toFixed(1)} KB`;
+	return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 type ProposalDetailProps = {
 	proposal: Proposal;
@@ -15,6 +23,10 @@ export default function ProposalDetail({ proposal, onBack }: ProposalDetailProps
 	const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
 	const [loadingEvaluations, setLoadingEvaluations] = useState(true);
 	const [evaluationError, setEvaluationError] = useState<string | null>(null);
+
+	const [files, setFiles] = useState<ProposalFile[]>([]);
+	const [loadingFiles, setLoadingFiles] = useState(true);
+	const [filesError, setFilesError] = useState<string | null>(null);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -33,6 +45,31 @@ export default function ProposalDetail({ proposal, onBack }: ProposalDetailProps
 			.finally(() => {
 				if (isMounted) {
 					setLoadingEvaluations(false);
+				}
+			});
+
+		return () => {
+			isMounted = false;
+		};
+	}, [proposal.id]);
+
+	useEffect(() => {
+		let isMounted = true;
+
+		fetchProposalFiles(proposal.id)
+			.then((fetchedFiles) => {
+				if (isMounted) {
+					setFiles(fetchedFiles);
+				}
+			})
+			.catch((requestError: unknown) => {
+				if (isMounted) {
+					setFilesError(requestError instanceof Error ? requestError.message : 'Dokümanlar alınamadı.');
+				}
+			})
+			.finally(() => {
+				if (isMounted) {
+					setLoadingFiles(false);
 				}
 			});
 
@@ -96,6 +133,34 @@ export default function ProposalDetail({ proposal, onBack }: ProposalDetailProps
 						</Typography>
 					</Box>
 				</Box>
+			</Box>
+
+			<Divider className="detail-divider" />
+
+			<Box component="section" className="proposal-files-section">
+				<Typography component="h3" className="detail-section-label">Dokümanlar</Typography>
+				{loadingFiles && <Typography color="text.secondary">Dokümanlar yükleniyor...</Typography>}
+				{filesError && <Alert severity="error">{filesError}</Alert>}
+				{!loadingFiles && !filesError && files.length === 0 && (
+					<Typography color="text.secondary">Bu fikre/öneriye eklenmiş doküman yok.</Typography>
+				)}
+				{files.length > 0 && (
+					<Box component="ul" className="proposal-file-list">
+						{files.map((file) => (
+							<li key={file.id}>
+								<DescriptionIcon fontSize="small" />
+								<a
+									href={getProposalFileDownloadUrl(proposal.id, file.id)}
+									target="_blank"
+									rel="noreferrer"
+								>
+									{file.fileName}
+								</a>
+								<span className="proposal-file-size">{formatFileSize(file.sizeBytes)}</span>
+							</li>
+						))}
+					</Box>
+				)}
 			</Box>
 
 			<Divider className="detail-divider" />

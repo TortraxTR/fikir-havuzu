@@ -11,25 +11,9 @@ namespace api.Mappers.ProposalFileMappers
             {
                 Id = proposalFile.Id,
                 ProposalId = proposalFile.ProposalId,
-                File = proposalFile.File
-            };
-        }
-
-        public static ProposalFile ToProposalFile(this CreateProposalFileRequestDto createDto)
-        {
-            return new ProposalFile
-            {
-                ProposalId = createDto.ProposalId,
-                File = createDto.File
-            };
-        }
-
-        public static ProposalFile ToProposalFile(this UpdateProposalFileRequestDto updateDto)
-        {
-            return new ProposalFile
-            {
-                ProposalId = updateDto.ProposalId,
-                File = updateDto.File
+                FileName = proposalFile.FileName,
+                ContentType = proposalFile.ContentType,
+                SizeBytes = proposalFile.Content.LongLength
             };
         }
     }

@@ -53,12 +53,6 @@ public static class DbSeeder
             CreateProposal(users[1], -2, "Yeni Çalışan Oryantasyonu", "İnsan Kaynakları", "İşe uyum süresini kısaltmak", "Standart bir ilk hafta kontrol listesi yeni çalışanların uyumunu kolaylaştırabilir.")
         };
 
-        var proposalFiles = proposals.SelectMany((proposal, index) => new[]
-        {
-            new ProposalFile { Id = Guid.NewGuid(), Proposal = proposal, File = $"proposal_{index + 1:00}_brief.pdf" },
-            new ProposalFile { Id = Guid.NewGuid(), Proposal = proposal, File = $"proposal_{index + 1:00}_details.docx" }
-        }).ToArray();
-
         var evaluations = new[]
         {
             CreateEvaluation(users[1], proposals[0], "Uygulanabilir ve geri dönüş süresi kısa.", 9, true),
@@ -76,7 +70,6 @@ public static class DbSeeder
         context.Permissions.AddRange(permissions);
         context.Users.AddRange(users);
         context.Proposals.AddRange(proposals);
-        context.ProposalFiles.AddRange(proposalFiles);
         context.Evaluations.AddRange(evaluations);
 
         await context.SaveChangesAsync(cancellationToken);

@@ -8,6 +8,10 @@ namespace api.Dtos.ProposalFile
 
         public Guid ProposalId { get; set; } // Dosyanın ait olduğu öneri ID
 
-        public string File { get; set; } = null!; // Dosya adı / yolu
+        public string FileName { get; set; } = null!; // Dosya adı
+
+        public string ContentType { get; set; } = null!;
+
+        public long SizeBytes { get; set; }
     }
 }

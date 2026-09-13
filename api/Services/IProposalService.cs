@@ -2,6 +2,7 @@ using api.Common;
 using api.Dtos.Evaluation;
 using api.Dtos.Proposal;
 using api.Dtos.ProposalFile;
+using Microsoft.AspNetCore.Http;
 
 namespace api.Services
 {
@@ -15,7 +16,9 @@ namespace api.Services
 
         Task<Result<IEnumerable<ProposalFileDto>>> GetFilesAsync(Guid proposalId, Guid callerId);
 
-        Task<Result<ProposalFileDto>> AddFileAsync(Guid proposalId, Guid callerId, CreateProposalFileRequestDto dto);
+        Task<Result<ProposalFileDto>> AddFileAsync(Guid proposalId, Guid callerId, IFormFile file);
+
+        Task<Result<ProposalFileContent>> DownloadFileAsync(Guid proposalId, Guid fileId, Guid callerId);
 
         Task<Result<ProposalDto>> CreateAsync(CreateProposalRequestDto dto);
 

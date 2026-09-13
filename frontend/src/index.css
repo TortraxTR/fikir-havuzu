@@ -259,6 +259,12 @@ body {
 .detail-section-label { margin-bottom: 8px !important; color: var(--text); font-size: 0.75rem !important; font-weight: 800 !important; letter-spacing: 0.12em; text-transform: uppercase; }
 .detail-explanation { width: 100%; padding: 20px 0; }
 .detail-explanation-text { width: 100%; color: var(--text); line-height: 1.75 !important; text-align: justify; white-space: pre-wrap; }
+.proposal-files-section { display: flex; flex-direction: column; gap: 12px; }
+.proposal-file-list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.proposal-file-list li { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-left: 3px solid var(--color-proposal-teal); background: var(--color-surface); }
+.proposal-file-list a { color: var(--text-h); font-weight: 600; text-decoration: none; }
+.proposal-file-list a:hover { text-decoration: underline; }
+.proposal-file-size { margin-left: auto; color: var(--text); font-size: 0.8rem; opacity: 0.7; }
 .evaluation-section { display: flex; flex-direction: column; gap: 20px; }
 .evaluation-list { display: flex; flex-direction: column; gap: 16px; }
 .evaluation-item { padding: 16px 20px; border-left: 3px solid var(--color-proposal-teal); background: var(--color-surface); }
