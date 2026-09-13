@@ -15,9 +15,10 @@ public static class AuthMapper
             Email = user.Email,
             Phone = user.Phone,
             IsActive = user.IsActive,
+            // Codes, not display names — LandingPage.tsx compares these against permission
+            // codes to decide which tabs to show.
             Permissions = user.Permissions
-                .Where(permission => permission.Name != null)
-                .Select(permission => permission.Name!)
+                .Select(permission => permission.Code)
                 .ToList()
         };
     }
