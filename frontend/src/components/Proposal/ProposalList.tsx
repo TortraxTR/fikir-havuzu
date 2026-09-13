@@ -1,7 +1,8 @@
-import { Alert, Autocomplete, Box, Button, Menu, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Alert, Autocomplete, Box, Button, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useState, useEffect } from "react";
 import type { Proposal } from "../../types/Proposal";
+import { PROPOSAL_TOPICS, PROPOSAL_TOPIC_LABELS, type ProposalTopic } from "../../types/ProposalTopic";
 import { fetchAllProposals } from "../../api";
 import ProposalDetail from './ProposalDetail';
 
@@ -39,7 +40,7 @@ export default function ProposalList() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [titleFilter, setTitleFilter] = useState('');
-    const [topicFilter, setTopicFilter] = useState('');
+    const [topicFilter, setTopicFilter] = useState<ProposalTopic | ''>('');
     const [creatorFilter, setCreatorFilter] = useState('');
     const [dateFilter, setDateFilter] = useState('');
     const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null);
@@ -103,7 +104,6 @@ export default function ProposalList() {
     }
 
     const titleOptions = [...new Set(proposals.map((proposal) => proposal.title))].sort();
-    const topicOptions = [...new Set(proposals.map((proposal) => proposal.topic))].sort();
     const creatorOptions = [...new Set(proposals.map((proposal) => proposal.userName))].sort();
     const dateOptions = [...new Set(proposals.map(getProposalDate))]
         .filter(Boolean)
@@ -113,12 +113,11 @@ export default function ProposalList() {
     const filteredProposals = proposals.filter((proposal) => {
         const proposalDate = getProposalDate(proposal);
         const normalizedTitle = proposal.title.toLocaleLowerCase('tr-TR');
-        const normalizedTopic = proposal.topic.toLocaleLowerCase('tr-TR');
         const normalizedCreator = proposal.userName.toLocaleLowerCase('tr-TR');
 
         return (
             normalizedTitle.includes(titleFilter.toLocaleLowerCase('tr-TR')) &&
-            normalizedTopic.includes(topicFilter.toLocaleLowerCase('tr-TR')) &&
+            (!topicFilter || proposal.topic === topicFilter) &&
             normalizedCreator.includes(creatorFilter.toLocaleLowerCase('tr-TR')) &&
             (!dateFilter || proposalDate === dateFilter)
         );
@@ -153,16 +152,19 @@ export default function ProposalList() {
                         )}
                     />
 
-                    <Autocomplete
-                        freeSolo
-                        open={false}
-                        options={topicOptions}
+                    <TextField
+                        select
+                        label="Konuya göre ara"
                         value={topicFilter}
-                        onInputChange={(_, value) => setTopicFilter(value)}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Konuya göre ara" />
-                        )}
-                    />
+                        onChange={(event) => setTopicFilter(event.target.value as ProposalTopic | '')}
+                    >
+                        <MenuItem value="">(Tümü)</MenuItem>
+                        {PROPOSAL_TOPICS.map((topic) => (
+                            <MenuItem key={topic} value={topic}>
+                                {PROPOSAL_TOPIC_LABELS[topic]}
+                            </MenuItem>
+                        ))}
+                    </TextField>
 
                     <Autocomplete
                         freeSolo
@@ -225,7 +227,7 @@ export default function ProposalList() {
                                     className="proposal-row"
                                 >
                                     <TableCell>{proposal.title}</TableCell>
-                                    <TableCell>{proposal.topic}</TableCell>
+                                    <TableCell>{PROPOSAL_TOPIC_LABELS[proposal.topic]}</TableCell>
                                     <TableCell>{proposal.userName}</TableCell>
                                     <TableCell>
                                         {new Date(proposal.createdAt).toLocaleString()}

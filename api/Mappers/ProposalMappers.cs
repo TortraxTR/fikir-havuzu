@@ -27,7 +27,7 @@ public static class ProposalMapper
             UserId = proposalDto.UserId,
             CreatedAt = proposalDto.CreatedAt == default ? DateTime.UtcNow : proposalDto.CreatedAt,
             Title = proposalDto.Title,
-            Topic = proposalDto.Topic,
+            Topic = proposalDto.Topic!.Value,
             Purpose = proposalDto.Purpose,
             Explanation = proposalDto.Explanation
         };
@@ -38,7 +38,7 @@ public static class ProposalMapper
         return new Proposal
         {
             Title = proposalDto.Title,
-            Topic = proposalDto.Topic,
+            Topic = proposalDto.Topic!.Value,
             Purpose = proposalDto.Purpose,
             Explanation = proposalDto.Explanation
         };

@@ -1,7 +1,9 @@
+import type { ProposalTopic } from './ProposalTopic';
+
 export type Proposal = {
     id: string;
     title: string;
-    topic: string;
+    topic: ProposalTopic;
     purpose: string;
     explanation: string;
     userId: string;

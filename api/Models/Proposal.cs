@@ -13,7 +13,7 @@ public partial class Proposal
 
     public string Title { get; set; } = null!;
 
-    public string Topic { get; set; } = null!;
+    public ProposalTopic Topic { get; set; }
 
     public string Purpose { get; set; } = null!;
 

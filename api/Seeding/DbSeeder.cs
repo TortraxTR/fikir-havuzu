@@ -43,14 +43,14 @@ public static class DbSeeder
 
         var proposals = new[]
         {
-            CreateProposal(users[2], -10, "Enerji Tasarruflu Aydınlatma", "Sürdürülebilirlik", "Elektrik tüketimini azaltmak", "Ortak alanlarda hareket sensörlü LED sistemine geçiş yapılarak enerji maliyetleri düşürülebilir."),
-            CreateProposal(users[0], -8, "Mentorluk Programı", "Kurum İçi Gelişim", "Deneyim aktarımını hızlandırmak", "Kıdemli ekip üyeleri ile yeni çalışanları eşleştiren 3 aylık bir mentorluk programı önerilmektedir."),
-            CreateProposal(users[4], -7, "Dijital Arşiv Projesi", "Dijital Dönüşüm", "Belge arama süresini kısaltmak", "Kağıt belgelerin aranabilir bir dijital arşivde toplanması iş akışını hızlandıracaktır."),
-            CreateProposal(users[5], -6, "Esnek Çalışma Saatleri", "Çalışan Deneyimi", "Üretkenliği ve memnuniyeti artırmak", "Ekiplerin belirli saat aralıklarında esnek çalışma yapması verimliliği destekleyebilir."),
-            CreateProposal(users[8], -5, "Geri Dönüşüm İstasyonları", "Çevre", "Atık ayrışımını kolaylaştırmak", "Bina katlarına ayrık atık kutuları yerleştirilerek geri dönüşüm oranı artırılabilir."),
-            CreateProposal(users[10], -4, "İç İletişim Bülteni", "İletişim", "Bilgi paylaşımını düzenlemek", "Aylık kısa bir bülten ekiplerin başarılarını ve duyuruları tek yerde toplayabilir."),
-            CreateProposal(users[11], -3, "Toplantı Odası Rezervasyonu", "Operasyon", "Oda kullanımını iyileştirmek", "Ortak takvim entegrasyonu ile toplantı odalarının çakışarak rezerve edilmesi önlenebilir."),
-            CreateProposal(users[1], -2, "Yeni Çalışan Oryantasyonu", "İnsan Kaynakları", "İşe uyum süresini kısaltmak", "Standart bir ilk hafta kontrol listesi yeni çalışanların uyumunu kolaylaştırabilir.")
+            CreateProposal(users[2], -10, "Enerji Tasarruflu Aydınlatma", ProposalTopic.Urun, "Elektrik tüketimini azaltmak", "Ortak alanlarda hareket sensörlü LED sistemine geçiş yapılarak enerji maliyetleri düşürülebilir."),
+            CreateProposal(users[0], -8, "Mentorluk Programı", ProposalTopic.Hizmet, "Deneyim aktarımını hızlandırmak", "Kıdemli ekip üyeleri ile yeni çalışanları eşleştiren 3 aylık bir mentorluk programı önerilmektedir."),
+            CreateProposal(users[4], -7, "Dijital Arşiv Projesi", ProposalTopic.Surec, "Belge arama süresini kısaltmak", "Kağıt belgelerin aranabilir bir dijital arşivde toplanması iş akışını hızlandıracaktır."),
+            CreateProposal(users[5], -6, "Esnek Çalışma Saatleri", ProposalTopic.Surec, "Üretkenliği ve memnuniyeti artırmak", "Ekiplerin belirli saat aralıklarında esnek çalışma yapması verimliliği destekleyebilir."),
+            CreateProposal(users[8], -5, "Geri Dönüşüm İstasyonları", ProposalTopic.Urun, "Atık ayrışımını kolaylaştırmak", "Bina katlarına ayrık atık kutuları yerleştirilerek geri dönüşüm oranı artırılabilir."),
+            CreateProposal(users[10], -4, "İç İletişim Bülteni", ProposalTopic.Hizmet, "Bilgi paylaşımını düzenlemek", "Aylık kısa bir bülten ekiplerin başarılarını ve duyuruları tek yerde toplayabilir."),
+            CreateProposal(users[11], -3, "Toplantı Odası Rezervasyonu", ProposalTopic.Hizmet, "Oda kullanımını iyileştirmek", "Ortak takvim entegrasyonu ile toplantı odalarının çakışarak rezerve edilmesi önlenebilir."),
+            CreateProposal(users[1], -2, "Yeni Çalışan Oryantasyonu", ProposalTopic.Surec, "İşe uyum süresini kısaltmak", "Standart bir ilk hafta kontrol listesi yeni çalışanların uyumunu kolaylaştırabilir.")
         };
 
         var evaluations = new[]
@@ -98,7 +98,7 @@ public static class DbSeeder
         return user;
     }
 
-    private static Proposal CreateProposal(User user, int daysAgo, string title, string topic, string purpose, string explanation)
+    private static Proposal CreateProposal(User user, int daysAgo, string title, ProposalTopic topic, string purpose, string explanation)
     {
         return new Proposal
         {

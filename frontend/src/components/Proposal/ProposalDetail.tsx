@@ -6,6 +6,7 @@ import { fetchProposalEvaluations, fetchProposalFiles, getProposalFileDownloadUr
 import type { Proposal } from '../../types/Proposal';
 import type { Evaluation } from '../../types/Evaluation';
 import type { ProposalFile } from '../../types/ProposalFile';
+import { PROPOSAL_TOPIC_LABELS } from '../../types/ProposalTopic';
 import ProposalEvaluate from './ProposalEvaluate';
 
 function formatFileSize(sizeBytes: number): string {
@@ -111,7 +112,7 @@ export default function ProposalDetail({ proposal, onBack }: ProposalDetailProps
 				<Box className="detail-meta-item">
 					<Typography className="detail-meta-label">Konu</Typography>
 					<Typography className="detail-topic-value">
-						{proposal.topic || 'Belirtilmemiş'}
+						{PROPOSAL_TOPIC_LABELS[proposal.topic] ?? 'Belirtilmemiş'}
 					</Typography>
 				</Box>
 				<Box className="detail-purpose-section">

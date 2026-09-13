@@ -1,11 +1,12 @@
-import { Alert, Box, Button, TextField } from '@mui/material';
+import { Alert, Box, Button, MenuItem, TextField } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { useRef, useState, type ChangeEvent, type SubmitEvent } from 'react';
 import { createProposal, uploadProposalFile } from '../../api';
+import { PROPOSAL_TOPICS, PROPOSAL_TOPIC_LABELS, type ProposalTopic } from '../../types/ProposalTopic';
 
 type ProposalForm = {
 	title: string;
-	topic: string;
+	topic: ProposalTopic | '';
 	purpose: string;
 	explanation: string;
 };
@@ -38,11 +39,10 @@ function validateForm(form: ProposalForm): ProposalFormErrors {
 	const errors: ProposalFormErrors = {};
 
 	if (!form.title.trim()) errors.title = 'Başlık zorunludur.';
-	if (!form.topic.trim()) errors.topic = 'Konu zorunludur.';
+	if (!form.topic) errors.topic = 'Konu zorunludur.';
 	if (!form.purpose.trim()) errors.purpose = 'Amaç zorunludur.';
 	if (!form.explanation.trim()) errors.explanation = 'Açıklama zorunludur.';
 	if (form.title.length > 128) errors.title = 'Başlık en fazla 128 karakter olabilir.';
-	if (form.topic.length > 128) errors.topic = 'Konu en fazla 128 karakter olabilir.';
 	if (form.purpose.length > 128) errors.purpose = 'Amaç en fazla 128 karakter olabilir.';
 	if (form.explanation.length > 8192) errors.explanation = 'Açıklama en fazla 8192 karakter olabilir.';
 
@@ -91,7 +91,7 @@ export default function ProposalCreate() {
 		setSubmitting(true);
 
 		try {
-			const created = await createProposal({ userId, ...form });
+			const created = await createProposal({ userId, ...form, topic: form.topic as ProposalTopic });
 
 			let uploadFailures = 0;
 			for (const file of files) {
@@ -136,6 +136,7 @@ export default function ProposalCreate() {
 					fullWidth
 				/>
 				<TextField
+					select
 					name="topic"
 					label="Konu"
 					value={form.topic}
@@ -143,10 +144,15 @@ export default function ProposalCreate() {
 					disabled={submitting}
 					error={!!errors.topic}
 					helperText={errors.topic}
-					slotProps={{ htmlInput: { maxLength: 128 } }}
 					required
 					fullWidth
-				/>
+				>
+					{PROPOSAL_TOPICS.map((topic) => (
+						<MenuItem key={topic} value={topic}>
+							{PROPOSAL_TOPIC_LABELS[topic]}
+						</MenuItem>
+					))}
+				</TextField>
 			</Box>
 			<TextField
 				name="purpose"

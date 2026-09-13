@@ -94,7 +94,8 @@ public partial class FikirHavuzuContext : DbContext
                 .HasMaxLength(128)
                 .HasColumnName("title");
             entity.Property(e => e.Topic)
-                .HasMaxLength(128)
+                .HasConversion<string>()
+                .HasMaxLength(20)
                 .HasColumnName("topic");
 
             entity.HasOne(d => d.User).WithMany(p => p.Proposals)
@@ -139,6 +140,8 @@ public partial class FikirHavuzuContext : DbContext
             entity.HasIndex(e => e.RegistrationNo, "Kullanıcı_sicilNo_key").IsUnique();
 
             entity.HasIndex(e => e.Email, "Kullanıcı_email_key").IsUnique();
+
+            entity.HasIndex(e => e.Phone, "Kullanıcı_telefon_key").IsUnique();
 
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd()

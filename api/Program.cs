@@ -6,6 +6,7 @@ using api.Repositories;
 using api.Seeding;
 using api.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,8 @@ var connectionString =
     builder.Configuration.GetConnectionString("FikirHavuzu")
     ?? throw new InvalidOperationException("Connection string 'FikirHavuzu' was not found.");
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<FikirHavuzuContext>(options =>

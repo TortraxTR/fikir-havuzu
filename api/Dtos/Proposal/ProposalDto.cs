@@ -1,3 +1,5 @@
+using api.Models;
+
 namespace api.Dtos.Proposal
 {
     public class ProposalDto
@@ -12,7 +14,7 @@ namespace api.Dtos.Proposal
 
         public string Title { get; set; } = null!; // Başlık
 
-        public string Topic { get; set; } = null!; // Konu
+        public ProposalTopic Topic { get; set; } // Konu
 
         public string Purpose { get; set; } = null!; // Amaç
 

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using api.Models;
 
 namespace api.Dtos.Proposal
 {
@@ -9,8 +10,7 @@ namespace api.Dtos.Proposal
         public string Title { get; set; } = null!; // Başlık
 
         [Required]
-        [StringLength(128, ErrorMessage = "Topic cannot exceed 128 characters.")]
-        public string Topic { get; set; } = null!; // Konu
+        public ProposalTopic? Topic { get; set; } // Konu (ürün / hizmet / süreç)
 
         [Required]
         [StringLength(128, ErrorMessage = "Purpose cannot exceed 128 characters.")]

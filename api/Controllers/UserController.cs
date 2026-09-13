@@ -6,6 +6,8 @@ using api.Mappers.UserMappers;
 using Microsoft.AspNetCore.Mvc;
 using api.Mappers.PermissionMappers;
 using api.Models;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace api.Controllers
 {
@@ -96,10 +98,27 @@ namespace api.Controllers
 
         var user = userDto.ToUser();
 
-        await _userRepository.CreateUserAsync(user);
+        try
+        {
+            await _userRepository.CreateUserAsync(user);
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } pgEx)
+        {
+            return Conflict(DescribeDuplicate(pgEx.ConstraintName));
+        }
 
         return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToUserDto());
     }
+
+    /// <summary>Friendly message for a unique-constraint violation on the User table.</summary>
+    private static string DescribeDuplicate(string? constraintName) => constraintName switch
+    {
+        "Kullanıcı_email_key" => "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.",
+        "Kullanıcı_telefon_key" => "Bu telefon numarası başka bir kullanıcı tarafından kullanılıyor.",
+        "Kullanıcı_kimlikNo_key" => "Bu T.C. kimlik numarası başka bir kullanıcı tarafından kullanılıyor.",
+        "Kullanıcı_sicilNo_key" => "Bu sicil numarası başka bir kullanıcı tarafından kullanılıyor.",
+        _ => "Bu bilgiler başka bir kullanıcı tarafından kullanılıyor."
+    };
 
     // POST: api/users/{id}/permissions
     [HttpPost("{id}/permissions")]
@@ -136,7 +155,16 @@ namespace api.Controllers
             return authorization.ToActionResult();
         }
 
-        var updatedUser = await _userRepository.UpdateUserAsync(id, userDto);
+        User? updatedUser;
+        try
+        {
+            updatedUser = await _userRepository.UpdateUserAsync(id, userDto);
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } pgEx)
+        {
+            return Conflict(DescribeDuplicate(pgEx.ConstraintName));
+        }
+
         if (updatedUser == null)
         {
             return NotFound();

@@ -2,6 +2,7 @@ import type { Permission } from "./types/Permission";
 import type { Evaluation } from "./types/Evaluation";
 import type { Proposal } from "./types/Proposal";
 import type { ProposalFile } from "./types/ProposalFile";
+import type { ProposalTopic } from "./types/ProposalTopic";
 import type { User } from "./types/User";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -218,7 +219,7 @@ export async function fetchAllProposals(userId: string): Promise<Proposal[]> {
 export async function createProposal(data: {
   userId: string;
   title: string;
-  topic: string;
+  topic: ProposalTopic;
   purpose: string;
   explanation: string;
 }): Promise<Proposal> {
