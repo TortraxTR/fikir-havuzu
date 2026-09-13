@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using api.Validation;
 
 namespace api.Dtos.User
 {
@@ -27,7 +28,7 @@ namespace api.Dtos.User
         public string RegistrationNo { get; set; } = null!; // Sicil No.
 
         [Required]
-        [StringLength(11, MinimumLength = 11, ErrorMessage = "Government ID must be exactly 11 characters.")]
+        [TcKimlikNo]
         public string GovernmentId { get; set; } = null!; // T.C. Kimlik No.
 
         public bool IsActive { get; set; } // Kullanıcı aktif mi?

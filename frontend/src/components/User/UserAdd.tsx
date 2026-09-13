@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent, type SubmitEvent } from 'react';
 import { Alert, Box, Button, TextField } from '@mui/material';
 import { createUser } from '../../api';
+import { isValidTcKimlikNo } from '../../utils/tcKimlikNo';
 
 interface FormData {
   name: string;
@@ -63,7 +64,7 @@ export default function UserAdd() {
     if (formData.registrationNo.length > 50) newErrors.registrationNo = 'Sicil No. 50 karakteri geçemez';
 
     if (!formData.governmentId.trim()) newErrors.governmentId = 'T.C. Kimlik No. gerekli';
-    if (formData.governmentId.length !== 11) newErrors.governmentId = 'T.C. Kimlik No. tam olarak 11 karakter olmalı';
+    else if (!isValidTcKimlikNo(formData.governmentId)) newErrors.governmentId = 'Geçersiz T.C. Kimlik No.';
 
     if (!formData.password) newErrors.password = 'Şifre gerekli';
     if (formData.password.length < 6) newErrors.password = 'Şifre en az 6 karakter olmalı';

@@ -2,6 +2,7 @@ import { useEffect, useState, type ChangeEvent, type SubmitEvent } from 'react';
 import { Alert, Autocomplete, Box, Button, TextField, Typography } from '@mui/material';
 import { fetchAllUsers, updateUser } from '../../api';
 import type { User } from '../../types/User';
+import { isValidTcKimlikNo } from '../../utils/tcKimlikNo';
 
 interface FormData {
     name: string;
@@ -143,8 +144,8 @@ export default function UserUpdate() {
 
         if (!formData.governmentId.trim()) {
             errors.governmentId = 'T.C. Kimlik No. gerekli';
-        } else if (formData.governmentId.length !== 11) {
-            errors.governmentId = 'T.C. Kimlik No. tam olarak 11 karakter olmalı';
+        } else if (!isValidTcKimlikNo(formData.governmentId)) {
+            errors.governmentId = 'Geçersiz T.C. Kimlik No.';
         }
 
         setValidationErrors(errors);
