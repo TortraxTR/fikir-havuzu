@@ -35,7 +35,6 @@ namespace api.Repositories
         public async Task<User> CreateUserAsync(User user)
         {
             await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
             return user;
         }
 
@@ -55,7 +54,6 @@ namespace api.Repositories
             existingUser.GovernmentId = userDto.GovernmentId;
             existingUser.IsActive = userDto.IsActive;
 
-            await _context.SaveChangesAsync();
             return existingUser;
         }
 
@@ -68,7 +66,6 @@ namespace api.Repositories
             }
 
             existingUser.IsActive = isActive;
-            await _context.SaveChangesAsync();
             return existingUser;
         }
 
@@ -81,7 +78,6 @@ namespace api.Repositories
             }
 
             _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
             return true;
         }
 
@@ -108,7 +104,6 @@ namespace api.Repositories
             }
 
             user.Permissions.Add(permission);
-            await _context.SaveChangesAsync();
             return true;
         }
 
@@ -126,7 +121,6 @@ namespace api.Repositories
             }
 
             user.Permissions.Remove(permission);
-            await _context.SaveChangesAsync();
             return true;
         }
     }

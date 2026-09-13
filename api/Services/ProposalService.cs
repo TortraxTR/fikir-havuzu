@@ -19,15 +19,18 @@ namespace api.Services
         private readonly IProposalRepository _proposals;
         private readonly IProposalFileRepository _files;
         private readonly IPermissionChecker _permissions;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ProposalService(
             IProposalRepository proposals,
             IProposalFileRepository files,
-            IPermissionChecker permissions)
+            IPermissionChecker permissions,
+            IUnitOfWork unitOfWork)
         {
             _proposals = proposals;
             _files = files;
             _permissions = permissions;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Result<IEnumerable<ProposalDto>>> GetVisibleAsync(Guid callerId)
@@ -138,6 +141,7 @@ namespace api.Services
             };
 
             var created = await _files.CreateProposalFileAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
             return Result<ProposalFileDto>.Success(created.ToProposalFileDto());
         }
 
@@ -173,6 +177,7 @@ namespace api.Services
             }
 
             var created = await _proposals.CreateProposalAsync(dto.ToProposal());
+            await _unitOfWork.SaveChangesAsync();
 
             // Re-read so the owner navigation is populated for the DTO projection.
             var full = await _proposals.GetProposalByIdAsync(created.Id) ?? created;
@@ -199,9 +204,13 @@ namespace api.Services
             }
 
             var updated = await _proposals.UpdateProposalAsync(id, dto.ToProposal());
-            return updated == null
-                ? Result<ProposalDto>.Fail(ResultError.NotFound)
-                : Result<ProposalDto>.Success(updated.ToProposalDto());
+            if (updated == null)
+            {
+                return Result<ProposalDto>.Fail(ResultError.NotFound);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+            return Result<ProposalDto>.Success(updated.ToProposalDto());
         }
 
         public async Task<Result> DeleteAsync(Guid id, Guid callerId)
@@ -222,7 +231,13 @@ namespace api.Services
             }
 
             var deleted = await _proposals.DeleteProposalAsync(id);
-            return deleted ? Result.Success() : Result.Fail(ResultError.NotFound);
+            if (!deleted)
+            {
+                return Result.Fail(ResultError.NotFound);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+            return Result.Success();
         }
 
         // Owner, or any active user who can evaluate proposals.

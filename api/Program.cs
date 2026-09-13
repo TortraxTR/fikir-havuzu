@@ -25,10 +25,12 @@ builder.Services.AddScoped<IProposalRepository, ProposalRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>();
 builder.Services.AddScoped<IProposalFileRepository, ProposalFileRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPermissionChecker, PermissionChecker>();
-builder.Services.AddScoped<IPermissionGuard, PermissionGuard>();
 builder.Services.AddScoped<IProposalService, ProposalService>();
 builder.Services.AddScoped<IEvaluationService, EvaluationService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>

@@ -43,7 +43,6 @@ namespace api.Repositories
         public async Task<Proposal> CreateProposalAsync(Proposal proposal)
         {
             await _context.Proposals.AddAsync(proposal);
-            await _context.SaveChangesAsync();
             return proposal;
         }
 
@@ -58,8 +57,7 @@ namespace api.Repositories
             existingProposal.Topic = proposal.Topic;
             existingProposal.Purpose = proposal.Purpose;
             existingProposal.Explanation = proposal.Explanation;
-            
-            await _context.SaveChangesAsync();
+
             return existingProposal;
         }
 
@@ -72,7 +70,6 @@ namespace api.Repositories
             }
 
             _context.Proposals.Remove(proposal);
-            await _context.SaveChangesAsync();
             return true;
         }
 

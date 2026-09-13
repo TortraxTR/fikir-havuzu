@@ -26,7 +26,6 @@ namespace api.Repositories
         public async Task<Evaluation> CreateEvaluationAsync(Evaluation evaluation)
         {
             await _context.Evaluations.AddAsync(evaluation);
-            await _context.SaveChangesAsync();
             return evaluation;
         }
 
@@ -44,7 +43,6 @@ namespace api.Repositories
             existingEvaluation.Score = evaluation.Score;
             existingEvaluation.IsPositive = evaluation.IsPositive;
 
-            await _context.SaveChangesAsync();
             return existingEvaluation;
         }
 
@@ -56,7 +54,6 @@ namespace api.Repositories
                 return false;
             }
             _context.Evaluations.Remove(evaluation);
-            await _context.SaveChangesAsync();
             return true;
         }
     }

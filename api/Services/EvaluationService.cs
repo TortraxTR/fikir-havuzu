@@ -11,15 +11,18 @@ namespace api.Services
         private readonly IEvaluationRepository _evaluations;
         private readonly IProposalRepository _proposals;
         private readonly IPermissionChecker _permissions;
+        private readonly IUnitOfWork _unitOfWork;
 
         public EvaluationService(
             IEvaluationRepository evaluations,
             IProposalRepository proposals,
-            IPermissionChecker permissions)
+            IPermissionChecker permissions,
+            IUnitOfWork unitOfWork)
         {
             _evaluations = evaluations;
             _proposals = proposals;
             _permissions = permissions;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Result<IEnumerable<EvaluationDto>>> GetAllAsync(Guid callerId)
@@ -63,6 +66,7 @@ namespace api.Services
             }
 
             var created = await _evaluations.CreateEvaluationAsync(dto.ToEvaluation());
+            await _unitOfWork.SaveChangesAsync();
             return Result<EvaluationDto>.Success(created.ToEvaluationDto());
         }
 
@@ -81,9 +85,13 @@ namespace api.Services
             }
 
             var updated = await _evaluations.UpdateEvaluationAsync(id, dto.ToEvaluation());
-            return updated == null
-                ? Result<EvaluationDto>.Fail(ResultError.NotFound)
-                : Result<EvaluationDto>.Success(updated.ToEvaluationDto());
+            if (updated == null)
+            {
+                return Result<EvaluationDto>.Fail(ResultError.NotFound);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+            return Result<EvaluationDto>.Success(updated.ToEvaluationDto());
         }
 
         public async Task<Result> DeleteAsync(Guid id, Guid callerId)
@@ -95,7 +103,13 @@ namespace api.Services
             }
 
             var deleted = await _evaluations.DeleteEvaluationAsync(id);
-            return deleted ? Result.Success() : Result.Fail(ResultError.NotFound);
+            if (!deleted)
+            {
+                return Result.Fail(ResultError.NotFound);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+            return Result.Success();
         }
     }
 }

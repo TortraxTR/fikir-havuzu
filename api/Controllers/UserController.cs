@@ -1,242 +1,97 @@
-using api.Authorization;
-using api.Interfaces;
-using api.Dtos.User;
+using api.Common;
 using api.Dtos.Permission;
-using api.Mappers.UserMappers;
+using api.Dtos.User;
+using api.Services;
 using Microsoft.AspNetCore.Mvc;
-using api.Mappers.PermissionMappers;
-using api.Models;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
 
 namespace api.Controllers
 {
     [Route("api/users")]
     [ApiController]
     public class UserController : ControllerBase
-{
-    private readonly IUserRepository _userRepository;
-    private readonly IPermissionGuard _guard;
-
-    public UserController(IUserRepository userRepository, IPermissionGuard guard)
     {
-        _userRepository = userRepository;
-        _guard = guard;
-    }
+        private readonly IUserService _users;
 
-    // GET: api/users
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers([FromQuery] Guid callerId)
-    {
-        var authorization = await _guard.RequireAsync(callerId, Permissions.BackOfficeRead);
-        if (!authorization.Ok)
+        public UserController(IUserService users)
         {
-            return authorization.ToActionResult();
+            _users = users;
         }
 
-        var users = await _userRepository.GetAllUsersAsync();
-        var usersDto = users.Select(u => u.ToUserDto());
-        return Ok(usersDto);
-    }
-
-    // GET: api/users/{id}
-    [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto>> GetUser([FromRoute] Guid id, [FromQuery] Guid callerId)
-    {
-        if (callerId != id)
+        // GET: api/users
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers([FromQuery] Guid callerId)
         {
-            var authorization = await _guard.RequireAsync(callerId, Permissions.BackOfficeRead);
-            if (!authorization.Ok)
+            var result = await _users.GetAllAsync(callerId);
+            return result.ToActionResult();
+        }
+
+        // GET: api/users/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserDto>> GetUser([FromRoute] Guid id, [FromQuery] Guid callerId)
+        {
+            var result = await _users.GetByIdAsync(id, callerId);
+            return result.ToActionResult();
+        }
+
+        // GET: api/users/{id}/permissions
+        [HttpGet("{id}/permissions")]
+        public async Task<ActionResult<IEnumerable<PermissionDto>>> GetUserPermissions([FromRoute] Guid id, [FromQuery] Guid callerId)
+        {
+            var result = await _users.GetPermissionsAsync(id, callerId);
+            return result.ToActionResult();
+        }
+
+        // POST: api/users
+        [HttpPost]
+        public async Task<ActionResult<UserDto>> CreateUser([FromQuery] Guid callerId, [FromBody] CreateUserRequestDto userDto)
+        {
+            var result = await _users.CreateAsync(callerId, userDto);
+            if (!result.Ok)
             {
-                return authorization.ToActionResult();
+                return result.Error();
             }
+
+            return CreatedAtAction(nameof(GetUser), new { id = result.Value!.Id, callerId }, result.Value);
         }
 
-        var user = await _userRepository.GetUserByIdAsync(id);
-        if (user == null)
+        // POST: api/users/{id}/permissions
+        [HttpPost("{id}/permissions")]
+        public async Task<ActionResult> AddPermissionToUser([FromRoute] Guid id, [FromQuery] Guid callerId, [FromBody] AddPermissionToUserRequestDto requestDto)
         {
-            return NotFound();
+            var result = await _users.AddPermissionAsync(id, callerId, requestDto.PermissionId);
+            return result.ToActionResult();
         }
-        return Ok(user.ToUserDto());
+
+        // UPDATE: api/users/{id}
+        [HttpPut("{id}")]
+        public async Task<ActionResult<UserDto>> UpdateUser([FromRoute] Guid id, [FromQuery] Guid callerId, [FromBody] UpdateUserRequestDto userDto)
+        {
+            var result = await _users.UpdateAsync(id, callerId, userDto);
+            return result.ToActionResult();
+        }
+
+        // UPDATE: api/users/{id}/setActive
+        [HttpPut("{id}/setActive")]
+        public async Task<ActionResult<UserDto>> SetUserActive([FromRoute] Guid id, [FromQuery] Guid callerId, [FromBody] SetUserActiveRequestDto requestDto)
+        {
+            var result = await _users.SetActiveAsync(id, callerId, requestDto.IsActive);
+            return result.ToActionResult();
+        }
+
+        // DELETE: api/users/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUser([FromRoute] Guid id, [FromQuery] Guid callerId)
+        {
+            var result = await _users.DeleteAsync(id, callerId);
+            return result.ToActionResult();
+        }
+
+        // DELETE: api/users/{id}/permissions/{permissionId}
+        [HttpDelete("{id}/permissions/{permissionId}")]
+        public async Task<ActionResult> RemovePermissionFromUser([FromRoute] Guid id, [FromRoute] Guid permissionId, [FromQuery] Guid callerId)
+        {
+            var result = await _users.RemovePermissionAsync(id, callerId, permissionId);
+            return result.ToActionResult();
+        }
     }
-
-    // GET: api/users/{id}/permissions
-    [HttpGet("{id}/permissions")]
-    public async Task<ActionResult<IEnumerable<PermissionDto>>> GetUserPermissions([FromRoute] Guid id, [FromQuery] Guid callerId)
-    {
-        // A user may always read their own permissions (the landing page needs this);
-        // reading someone else's requires a back-office permission.
-        if (callerId != id)
-        {
-            var authorization = await _guard.RequireAsync(callerId, Permissions.BackOfficeRead);
-            if (!authorization.Ok)
-            {
-                return authorization.ToActionResult();
-            }
-        }
-
-        var user = await _userRepository.GetUserByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        var permissions = await _userRepository.GetUserPermissionsAsync(id);
-        var permissionsDto = permissions.Select(p => p.ToPermissionDto());
-        return Ok(permissionsDto);
-    }
-
-    // POST: api/users
-    [HttpPost]
-    public async Task<ActionResult<UserDto>> CreateUser([FromQuery] Guid callerId, [FromBody] Dtos.User.CreateUserRequestDto userDto)
-    {
-        var authorization = await _guard.RequireAsync(callerId, Permissions.UserManagement);
-        if (!authorization.Ok)
-        {
-            return authorization.ToActionResult();
-        }
-
-        var user = userDto.ToUser();
-
-        try
-        {
-            await _userRepository.CreateUserAsync(user);
-        }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } pgEx)
-        {
-            return Conflict(DescribeDuplicate(pgEx.ConstraintName));
-        }
-
-        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToUserDto());
-    }
-
-    /// <summary>Friendly message for a unique-constraint violation on the User table.</summary>
-    private static string DescribeDuplicate(string? constraintName) => constraintName switch
-    {
-        "Kullanıcı_email_key" => "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.",
-        "Kullanıcı_telefon_key" => "Bu telefon numarası başka bir kullanıcı tarafından kullanılıyor.",
-        "Kullanıcı_kimlikNo_key" => "Bu T.C. kimlik numarası başka bir kullanıcı tarafından kullanılıyor.",
-        "Kullanıcı_sicilNo_key" => "Bu sicil numarası başka bir kullanıcı tarafından kullanılıyor.",
-        _ => "Bu bilgiler başka bir kullanıcı tarafından kullanılıyor."
-    };
-
-    // POST: api/users/{id}/permissions
-    [HttpPost("{id}/permissions")]
-    public async Task<ActionResult> AddPermissionToUser([FromRoute] Guid id, [FromQuery] Guid callerId, [FromBody] Dtos.Permission.AddPermissionToUserRequestDto requestDto)
-    {
-        var authorization = await _guard.RequireAsync(callerId, Permissions.PermissionManagement);
-        if (!authorization.Ok)
-        {
-            return authorization.ToActionResult();
-        }
-
-        var user = await _userRepository.GetUserByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        var success = await _userRepository.AddPermissionToUserAsync(id, requestDto.PermissionId);
-        if (!success)
-        {
-            return BadRequest("Failed to add permission to user.");
-        }
-
-        return NoContent();
-    }
-
-    // UPDATE: api/users/{id}
-    [HttpPut("{id}")]
-    public async Task<ActionResult<UserDto>> UpdateUser([FromRoute] Guid id, [FromQuery] Guid callerId, [FromBody] Dtos.User.UpdateUserRequestDto userDto)
-    {
-        var authorization = await _guard.RequireAsync(callerId, Permissions.UserManagement);
-        if (!authorization.Ok)
-        {
-            return authorization.ToActionResult();
-        }
-
-        User? updatedUser;
-        try
-        {
-            updatedUser = await _userRepository.UpdateUserAsync(id, userDto);
-        }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } pgEx)
-        {
-            return Conflict(DescribeDuplicate(pgEx.ConstraintName));
-        }
-
-        if (updatedUser == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(updatedUser.ToUserDto());
-    }
-
-    // UPDATE: api/users/{id}/setActive
-    [HttpPut("{id}/setActive")]
-    public async Task<ActionResult<UserDto>> SetUserActive([FromRoute] Guid id, [FromQuery] Guid callerId, [FromBody] Dtos.User.SetUserActiveRequestDto requestDto)
-    {
-        var authorization = await _guard.RequireAsync(callerId, Permissions.UserManagement);
-        if (!authorization.Ok)
-        {
-            return authorization.ToActionResult();
-        }
-
-        var updatedUser = await _userRepository.SetUserActiveAsync(id, requestDto.IsActive);
-        if (updatedUser == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(updatedUser.ToUserDto());
-    }
-
-
-    // DELETE: api/users/{id}
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteUser([FromRoute] Guid id, [FromQuery] Guid callerId)
-    {
-        var authorization = await _guard.RequireAsync(callerId, Permissions.UserManagement);
-        if (!authorization.Ok)
-        {
-            return authorization.ToActionResult();
-        }
-
-        var user = await _userRepository.GetUserByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        await _userRepository.DeleteUserAsync(id);
-
-        return NoContent();
-    }
-
-    // DELETE: api/users/{id}/permissions/{permissionId}
-    [HttpDelete("{id}/permissions/{permissionId}")]
-    public async Task<ActionResult> RemovePermissionFromUser([FromRoute] Guid id, [FromRoute] Guid permissionId, [FromQuery] Guid callerId)
-    {
-        var authorization = await _guard.RequireAsync(callerId, Permissions.PermissionManagement);
-        if (!authorization.Ok)
-        {
-            return authorization.ToActionResult();
-        }
-
-        var user = await _userRepository.GetUserByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        var success = await _userRepository.RemovePermissionFromUserAsync(id, permissionId);
-        if (!success)
-        {
-            return BadRequest("Failed to remove permission from user.");
-        }
-
-        return NoContent();
-    }
-
-}};
+}

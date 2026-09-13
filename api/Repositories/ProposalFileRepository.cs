@@ -28,7 +28,6 @@ namespace api.Repositories
         public async Task<ProposalFile> CreateProposalFileAsync(ProposalFile proposalFile)
         {
             await _context.ProposalFiles.AddAsync(proposalFile);
-            await _context.SaveChangesAsync();
             return proposalFile;
         }
     }

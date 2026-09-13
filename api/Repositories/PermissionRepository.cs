@@ -25,7 +25,6 @@ namespace api.Repositories
         public async Task<Permission> CreatePermissionAsync(Permission permission)
         {
             await _context.Permissions.AddAsync(permission);
-            await _context.SaveChangesAsync();
             return permission;
         }
 
@@ -39,7 +38,6 @@ namespace api.Repositories
 
             existingPermission.Name = permission.Name;
 
-            await _context.SaveChangesAsync();
             return existingPermission;
         }
 
@@ -52,7 +50,6 @@ namespace api.Repositories
             }
 
             _context.Permissions.Remove(permission);
-            await _context.SaveChangesAsync();
             return true;
         }
     }
