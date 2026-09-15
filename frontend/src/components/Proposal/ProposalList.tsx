@@ -143,7 +143,6 @@ export default function ProposalList() {
                 <Box className="proposal-filter-fields">
                     <Autocomplete
                         freeSolo
-                        open={false}
                         options={titleOptions}
                         value={titleFilter}
                         onInputChange={(_, value) => setTitleFilter(value)}
@@ -168,7 +167,6 @@ export default function ProposalList() {
 
                     <Autocomplete
                         freeSolo
-                        open={false}
                         options={creatorOptions}
                         value={creatorFilter}
                         onInputChange={(_, value) => setCreatorFilter(value)}
@@ -179,7 +177,6 @@ export default function ProposalList() {
 
                     <Autocomplete
                         freeSolo
-                        open={false}
                         options={dateOptions}
                         value={dateFilter}
                         onInputChange={(_, value) => setDateFilter(value)}
