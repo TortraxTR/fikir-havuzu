@@ -13,7 +13,7 @@ namespace api.Mappers.ProposalFileMappers
                 ProposalId = proposalFile.ProposalId,
                 FileName = proposalFile.FileName,
                 ContentType = proposalFile.ContentType,
-                SizeBytes = proposalFile.Content.LongLength
+                SizeBytes = proposalFile.SizeBytes
             };
         }
     }

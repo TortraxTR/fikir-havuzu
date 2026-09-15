@@ -8,6 +8,7 @@ using api.Mappers.EvaluationMappers;
 using api.Mappers.ProposalMappers;
 using api.Mappers.ProposalFileMappers;
 using api.Models;
+using api.Services.Storage;
 using Microsoft.AspNetCore.Http;
 
 namespace api.Services
@@ -20,17 +21,20 @@ namespace api.Services
         private readonly IProposalFileRepository _files;
         private readonly IPermissionChecker _permissions;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileStorageService _storage;
 
         public ProposalService(
             IProposalRepository proposals,
             IProposalFileRepository files,
             IPermissionChecker permissions,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IFileStorageService storage)
         {
             _proposals = proposals;
             _files = files;
             _permissions = permissions;
             _unitOfWork = unitOfWork;
+            _storage = storage;
         }
 
         public async Task<Result<IEnumerable<ProposalDto>>> GetVisibleAsync(Guid callerId)
@@ -129,15 +133,18 @@ namespace api.Services
                 return Result<ProposalFileDto>.Fail(ResultError.Validation, "Dosya boyutu 10 MB'ı geçemez.");
             }
 
-            using var stream = new MemoryStream();
-            await file.CopyToAsync(stream);
+            var contentType = string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType;
+
+            await using var stream = file.OpenReadStream();
+            var storageKey = await _storage.UploadAsync(stream, file.FileName, contentType);
 
             var entity = new ProposalFile
             {
                 ProposalId = proposalId,
                 FileName = file.FileName,
-                ContentType = string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType,
-                Content = stream.ToArray()
+                ContentType = contentType,
+                StorageKey = storageKey,
+                SizeBytes = file.Length
             };
 
             var created = await _files.CreateProposalFileAsync(entity);
@@ -165,7 +172,8 @@ namespace api.Services
                 return Result<ProposalFileContent>.Fail(ResultError.NotFound);
             }
 
-            return Result<ProposalFileContent>.Success(new ProposalFileContent(file.FileName, file.ContentType, file.Content));
+            var content = await _storage.DownloadAsync(file.StorageKey);
+            return Result<ProposalFileContent>.Success(new ProposalFileContent(file.FileName, file.ContentType, content));
         }
 
         public async Task<Result<ProposalDto>> CreateAsync(CreateProposalRequestDto dto)
@@ -230,6 +238,8 @@ namespace api.Services
                 return access.ToFailure();
             }
 
+            var files = await _files.GetProposalFilesByProposalIdAsync(id);
+
             var deleted = await _proposals.DeleteProposalAsync(id);
             if (!deleted)
             {
@@ -237,6 +247,13 @@ namespace api.Services
             }
 
             await _unitOfWork.SaveChangesAsync();
+
+            // The DB row cascades on delete, but the R2 object behind it does not.
+            foreach (var file in files)
+            {
+                await _storage.DeleteAsync(file.StorageKey);
+            }
+
             return Result.Success();
         }
 

@@ -35,6 +35,24 @@ Migration'lar ve seed verisi **elle çalıştırmanıza gerek kalmadan** uygulam
 başladığında otomatik uygulanır (bkz. `api/Program.cs` → `DbSeeder.SeedAsync`). Veritabanı
 boşsa örnek kullanıcılar, öneriler ve değerlendirmelerle doldurulur.
 
+## Dosya depolama (Cloudflare R2)
+
+Öneri dokümanları (`POST /api/proposals/{id}/files`) veritabanında değil, Cloudflare R2'de
+saklanır. API'yi çalıştırmadan önce `api/appsettings.json` içindeki `R2` bölümünü kendi
+hesap bilgilerinizle doldurun:
+
+```json
+"R2": {
+  "AccountId": "<cloudflare-hesap-id>",
+  "AccessKey": "<r2-access-key>",
+  "SecretKey": "<r2-secret-key>",
+  "BucketName": "<bucket-adı>"
+}
+```
+
+Bu değerler Cloudflare panelinde R2 → "Manage R2 API Tokens" üzerinden oluşturulur. Bucket'ın
+kendisi de önceden oluşturulmuş olmalıdır.
+
 ## API'yi çalıştırma
 
 ```bash

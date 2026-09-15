@@ -121,7 +121,10 @@ public partial class FikirHavuzuContext : DbContext
             entity.Property(e => e.ContentType)
                 .HasMaxLength(255)
                 .HasColumnName("content_type");
-            entity.Property(e => e.Content).HasColumnName("content");
+            entity.Property(e => e.StorageKey)
+                .HasMaxLength(1024)
+                .HasColumnName("storage_key");
+            entity.Property(e => e.SizeBytes).HasColumnName("size_bytes");
             entity.Property(e => e.ProposalId).HasColumnName("proposal_id");
 
             entity.HasOne(d => d.Proposal).WithMany(p => p.ProposalFiles)

@@ -50,7 +50,8 @@ erDiagram
         uuid proposal_id FK
         varchar_255 file_name
         varchar_255 content_type
-        bytea content
+        varchar_1024 storage_key
+        bigint size_bytes
     }
 
     "Evaluation" {
@@ -72,6 +73,6 @@ erDiagram
   ara tablonun birincil anahtarı `(user_id, permission_id)` bileşik anahtarıdır.
 - `Proposal.topic`, C# tarafında `ProposalTopic` enum'udur; veritabanında string olarak saklanır
   (`Urun` / `Hizmet` / `Surec`).
-- `ProposalFile.content`, yüklenen dokümanın ham baytlarını (`bytea`) tutar — ayrı bir dosya
-  deposu kullanılmaz.
+- `ProposalFile.storage_key`, dokümanın Cloudflare R2'deki nesne anahtarını tutar; ham baytlar
+  veritabanında değil R2'de saklanır (bkz. `api/Services/Storage/`).
 - Tablo ve kısıt adları kasıtlı olarak Türkçe bırakılmıştır (bkz. `FikirHavuzuContext.cs`).

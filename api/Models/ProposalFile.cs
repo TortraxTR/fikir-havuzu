@@ -13,7 +13,9 @@ public partial class ProposalFile
 
     public string ContentType { get; set; } = null!;
 
-    public byte[] Content { get; set; } = null!;
+    public string StorageKey { get; set; } = null!;
+
+    public long SizeBytes { get; set; }
 
     public virtual Proposal Proposal { get; set; } = null!;
 }
