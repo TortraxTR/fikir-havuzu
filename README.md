@@ -6,7 +6,6 @@ değerlendirilmesi ve yetki yönetiminin yapılabildiği bir sistem.
 - **API:** .NET 8, ASP.NET Core Web API, Entity Framework Core, PostgreSQL
 - **Frontend:** React + TypeScript, Vite, MUI
 - **Veritabanı şeması:** [docs/database-schema.md](docs/database-schema.md)
-- **Açık işler / yol haritası:** [TODO.md](TODO.md)
 
 ## Gereksinimler
 
